@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "target": "es2017",
+    "module": "esnext",
+    "sourceMap": true,
+    "outDir": "./dist",
+
+    "strict": false,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "rootDir": "..",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

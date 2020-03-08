@@ -1,0 +1,44 @@
+{
+  "name": "webbotime",
+  "version": "1.0.0",
+  "description": "Online orienteering centre with EMIT EKT integration",
+  "main": "helper.ts",
+  "type": "module",
+  "scripts": {
+    "prestart": "gulp prestart",
+    "start": "servor dist index.html 8090 --reload",
+    "dev": "gulp",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikaello/emit-punch-cards-communication.git"
+  },
+  "keywords": [
+    "emit",
+    "ekt",
+    "orienteering",
+    "serial",
+    "webusb"
+  ],
+  "browserslist": [
+    "last 1 Chrome versions"
+  ],
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/mikaello/emit-punch-cards-communication/issues"
+  },
+  "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
+  "devDependencies": {
+    "@types/node": "^13.9.0",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "servor": "^3.2.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "emit-punch-cards-communication": "link:./../"
+  }
+}
