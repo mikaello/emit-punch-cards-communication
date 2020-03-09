@@ -41,6 +41,7 @@ export interface SerialPort {
   open(options: SerialOptions): Promise<void>;
   close(): Promise<void>;
   readonly readable: ReadableStream;
+  readonly writable: WritableStream;
   readonly in: ReadableStream;
   readonly out: WritableStream;
   getInfo(): SerialPortInfo;

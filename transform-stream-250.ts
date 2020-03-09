@@ -6,9 +6,8 @@ export type Ecard = {
   controlCodes: Array<{ code: number; time: number }>;
   emitTimeSystemString?: string;
   disp1?: string;
-  numberOfDisturbance?: number;
-  numberOfTests?: number;
-  numberOfRaces?: number;
+  disp2?: string;
+  disp3?: string;
   validTransferCheckByte: boolean;
   finishedReading: boolean;
 };
@@ -146,16 +145,9 @@ class EmitEKT250Unpacker {
     const emitTimeSystemString = decoder.decode(
       new DataView(this.data.buffer, 160, 32),
     );
-    const disp1 = decoder.decode(new DataView(this.data.buffer, 192, 24));
-    const numberOfDisturbance = this.getNumberFromBytes(
-      new DataView(this.data.buffer, 200, 5),
-    ); // S0000
-    const numberOfTests = this.getNumberFromBytes(
-      new DataView(this.data.buffer, 205, 5),
-    ); // P0000
-    const numberOfRaces = this.getNumberFromBytes(
-      new DataView(this.data.buffer, 210, 6),
-    ); // L00000
+    const disp1 = decoder.decode(new DataView(this.data.buffer, 192, 8));
+    const disp2 = decoder.decode(new DataView(this.data.buffer, 200, 8));
+    const disp3 = decoder.decode(new DataView(this.data.buffer, 208, 8));
 
     return {
       ecardNumber,
@@ -165,9 +157,8 @@ class EmitEKT250Unpacker {
       controlCodes,
       emitTimeSystemString,
       disp1,
-      numberOfDisturbance,
-      numberOfTests,
-      numberOfRaces,
+      disp2,
+      disp3,
       validTransferCheckByte: this.checkControlCode(
         new DataView(this.data.buffer),
       ),

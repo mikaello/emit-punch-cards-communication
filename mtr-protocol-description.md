@@ -9,7 +9,7 @@ baude 9600, no parity, 8 bit, 1 stop bit.
   <dd>Status. Will make the MTR send a status-message (see xxx for protocol description)</dd>
 
   <dt><code>/SA</code></dt>
-  <dd>Spool all data in MTR2. No Polling will be done! This will send messages of type xxx until all stored e-card readings is sent.</dd>
+  <dd>Spool all data in MTR2. No Polling will be done! This will send messages of type xxx until all stored e-card readings are sent.</dd>
 
   <dt><code>/SBxxxx</code></dt>
   <dd>Spool Binary. Spool all data from package# xxxx (LSB) and to on /NS – New session</dd>
@@ -54,7 +54,7 @@ An MTR message is an e-card reading, and have the following format:
 | ------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- |
 | 1-4     | preamble        | (4 0xFF never occur "inside" a message, this can be used to resynchronize logic if a connection is broken)                               | 0xFF         | 4               |
 | 5       | package-size    | number of bytes excluding preamble ( = 230)                                                                                              | 0xE6         | 1               |
-| 6       | package-type    | 'M' as "MTR-datamessage".                                                                                                                | M            | 1               |
+| 6       | package-type    | 'M' as "MTR-datamessage".                                                                                                                | 0x4D         | 1               |
 | 7-8     | MTR-id          | Serial number of MTR2; Least significant byte first                                                                                      |              | 2               |
 | 9-14    | timestamp       | Binary Year, Month, Day, Hour, Minute, Second                                                                                            |              | 6               |
 | 15-16   | TS milliseconds | Milliseconds NOT YET USED, WILL BE 0 IN THIS VERSION.                                                                                    |              | 2               |
@@ -62,7 +62,7 @@ An MTR message is an e-card reading, and have the following format:
 | 21-23   | e-card no.      | Binary, Least sign byte first                                                                                                            |              | 3               |
 | 24      | Production week | 0-53 (0 when package is retrived from "history", e.g. when spooling)                                                                     |              | 1               |
 | 25      | Production year | 94-99,0-..X (0 when package is retrived from "history", e.g. when spooling)                                                              |              | 1               |
-| 26      | e-card head sum | head check sum <TODO: how to calculate?> (value 0 whet package is retrived from "history", e.g. when spooling)                           | 0x00 or 0x01 | 1               |
+| 26      | e-card head sum | head check sum <TODO: how to calculate?> (value 0 when package is retrived from "history", e.g. when spooling)                           | 0x00 or 0x01 | 1               |
 | 27-176  | control-codes   | Control codes and times. 50 x (1 byte binary control code 0-250 and 2 bytes binary time 0-65534 sec). Unused controls and times are `0`. |              | 150             |
 | 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrived from "history" (see [ASCII-string](ASCII-string-in-MTR-Message))                |              | 56              |
 | 233     | Checksum        | Binary SUM (MOD 256) of all bytes including _preamble_                                                                                   |              | 1               |
