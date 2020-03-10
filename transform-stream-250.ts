@@ -1,3 +1,5 @@
+import { bytesToInt, checkControlCode } from "./byteHandlingUtils";
+
 export type Ecard = {
   ecardNumber: number;
   ecardProductionWeek: number;
@@ -81,25 +83,6 @@ class EmitEKT250Unpacker {
     this.checkForChunks();
   }
 
-  checkControlCode(view: DataView) {
-    let sum = 0;
-    for (let i = 0; i < view.byteLength; i++) {
-      sum += view.getUint8(i);
-    }
-
-    return sum % 256 === 0;
-  }
-
-  getNumberFromBytes(view: DataView) {
-    let number = 0;
-
-    for (let i = 0; i < view.byteLength; i++) {
-      number |= view.getUint8(i) << (i * 8);
-    }
-
-    return number;
-  }
-
   getControlCodeInformation(view: DataView) {
     let codes: Array<{ code: number; time: number }> = [];
     for (let i = 0; i < view.byteLength; i += 3) {
@@ -130,12 +113,8 @@ class EmitEKT250Unpacker {
   }
 
   parseEcard(): Ecard {
-    const checkByte = this.checkControlCode(
-      new DataView(this.data.buffer, 2, 8),
-    );
-    const ecardNumber = this.getNumberFromBytes(
-      new DataView(this.data.buffer, 2, 3),
-    );
+    const checkByte = checkControlCode(new DataView(this.data.buffer, 2, 8));
+    const ecardNumber = bytesToInt(new DataView(this.data.buffer, 2, 3));
     const ecardProductionWeek = this.data[6];
     const ecardProductionYear = this.data[7];
     const controlCodes = this.getControlCodeInformation(
@@ -159,20 +138,14 @@ class EmitEKT250Unpacker {
       disp1,
       disp2,
       disp3,
-      validTransferCheckByte: this.checkControlCode(
-        new DataView(this.data.buffer),
-      ),
+      validTransferCheckByte: checkControlCode(new DataView(this.data.buffer)),
       finishedReading: true,
     };
   }
 
   parseEcardMetadata(): Ecard {
-    const checkByte = this.checkControlCode(
-      new DataView(this.data.buffer, 2, 8),
-    );
-    const ecardNumber = this.getNumberFromBytes(
-      new DataView(this.data.buffer, 2, 3),
-    );
+    const checkByte = checkControlCode(new DataView(this.data.buffer, 2, 8));
+    const ecardNumber = bytesToInt(new DataView(this.data.buffer, 2, 3));
     const ecardProductionWeek = this.data[6];
     const ecardProductionYear = this.data[7];
 
