@@ -9,7 +9,7 @@
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,12 @@
   "bugs": {
     "url": "https://github.com/mikaello/emit-punch-cards-communication/issues"
   },
-  "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme"
+  "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3",
+    "web-streams-polyfill": "^2.1.0"
+  }
 }

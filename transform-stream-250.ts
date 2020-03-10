@@ -212,7 +212,7 @@ class EmitEKT250Unpacker {
       const ecard = this.unpackedQueue.pop();
 
       // Inform consumer about the found chunk
-      if (typeof this.onChunk === "function") {
+      if (typeof this.onChunk === "function" && ecard) {
         this.onChunk(ecard);
       }
     }
@@ -224,7 +224,10 @@ class EmitEKT250Unpacker {
  *
  * It can be consumed by a ReadableStream's pipeThrough method.
  */
-export class EmitEkt250TransformStream extends TransformStream {
+export class EmitEkt250TransformStream extends TransformStream<
+  Uint8Array,
+  Ecard
+> {
   /**
    * @param {boolean} sendMetadataWhenRead If true, objects containing only
    * ecard metadata will be sent as soon possible. With a duplicate sent right
