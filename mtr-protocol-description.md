@@ -6,19 +6,19 @@ baude 9600, no parity, 8 bit, 1 stop bit.
 
 <dl>
   <dt><code>/ST</code></dt>
-  <dd>Status. Will make the MTR send a status-message (see xxx for protocol description)</dd>
+  <dd>Status. Will make the MTR send a status-message (see <a href="#status-message">status message</a> for protocol description)</dd>
 
   <dt><code>/SA</code></dt>
-  <dd>Spool all data in MTR2. No Polling will be done! This will send messages of type xxx until all stored e-card readings are sent.</dd>
+  <dd>Spool all data in MTR2. No Polling will be done! This will send messages of type <a href="#message-description">MTR message</a> until all stored e-card readings are sent.</dd>
 
   <dt><code>/SBxxxx</code></dt>
-  <dd>Spool Binary. Spool all data from package# xxxx (LSB) and to on. You will need to perform a <code>/ST</code> to get valid to package#-s (<code>xxxx</code>) to use.</dd>
+  <dd>Spool Binary. Spool all data from package# xxxx (LSB) and to on (data will be sent as <a href="#message-description">MTR messages</a>). You will need to perform a <code>/ST</code> to get valid to package#-s (<code>xxxx</code>) to use.</dd>
 
   <dt><code>/NS</code></dt>
   <dd>New session</dd>
 
   <dt><code>/GBxxxx</code></dt>
-  <dd>Get message binary. Will send a single data-message from history. The MTR will continue "polling" for e-cards during data sending, with short dealy for receipt. Least significant byte first. Use <code>/ST</code> to find the <code>xxxx</code> you are looking for.</dd>
+  <dd>Get message binary. Will send a single data-message from history in the format of a <a href="#message-description">MTR message</a>. The MTR will continue "polling" for e-cards during data sending, with short dealy for receipt. Least significant byte first. Use <code>/ST</code> to find the <code>xxxx</code> you are looking for.</dd>
 
   <dt><code>/SCymdhms</code></dt>
   <dd>Set clock. The 6 bytes are binary values for current time:
@@ -51,7 +51,9 @@ baude 9600, no parity, 8 bit, 1 stop bit.
 
 ## Message description
 
-An MTR message is an e-card reading, and have the following format:
+An MTR message is an e-card reading (either by user placing ecard on MTR, or by
+issuing a command to MTR to retrieve from history), and have the following
+format:
 
 | Byte    | Name            | Description                                                                                                                              | Value        | Number of bytes |
 | ------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- |
@@ -67,7 +69,7 @@ An MTR message is an e-card reading, and have the following format:
 | 25      | Production year | 94-99,0-..X (0 when package is retrived from "history", e.g. when spooling)                                                              |              | 1               |
 | 26      | e-card head sum | head check sum <TODO: how to calculate?> (value 0 when package is retrived from "history", e.g. when spooling)                           | 0x00 or 0x01 | 1               |
 | 27-176  | control-codes   | Control codes and times. 50 x (1 byte binary control code 0-250 and 2 bytes binary time 0-65534 sec). Unused controls and times are `0`. |              | 150             |
-| 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrived from "history" (see [ASCII-string](ASCII-string-in-MTR-Message))                |              | 56              |
+| 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrived from "history" (see [ASCII-string](#ascii-string-in-mtr-message))               |              | 56              |
 | 233     | Checksum        | Binary SUM (MOD 256) of all bytes including `preamble`                                                                                   |              | 1               |
 | 234     | NULL-filler     | Binary 0 (to avoid potential 5 0xFF's. Making it easier to haunt `preamble`                                                              | 0x00         | 1               |
 |         |                 |                                                                                                                                          |              |                 |
