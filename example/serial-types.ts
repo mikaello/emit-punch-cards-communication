@@ -49,8 +49,10 @@ export interface SerialPort {
 
 declare global {
   interface Window {
-    connect: () => void;
-    disconnect: () => void;
+    connect250: () => void;
+    connectMtr4: () => void;
+    disconnect250: () => void;
+    disconnectMtr4: () => void;
   }
 
   export const ParityType: {

@@ -14,6 +14,13 @@ export type Ecard = {
   finishedReading: boolean;
 };
 
+export const serialOptions250 = {
+  baudrate: 9600,
+  stopbits: 2,
+  parity: "none",
+  databits: 8,
+};
+
 const ecardLength = 217;
 
 /**
@@ -26,7 +33,7 @@ class EmitEKT250Unpacker {
   data: Uint8Array;
   unpackedQueue: Array<Ecard>;
   onChunk: null | ((chunk: Ecard) => void);
-  position: null | number;
+  position: number;
   previousWasStartByte: boolean;
   parsedEcardMetadata: boolean;
 
@@ -214,7 +221,24 @@ export class EmitEkt250TransformStream extends TransformStream<
         unpacker.onChunk = chunk => controller.enqueue(chunk);
       },
       transform(uint8Array) {
-        unpacker.addBinaryData(uint8Array);
+        const od = 255 - 32; // neccessary to XOR with this, see OdTransformStream
+        unpacker.addBinaryData(uint8Array.map(byte => byte ^ od));
+      },
+    });
+  }
+}
+
+/**
+ * This transform stream XOR-s all bytes with OD (255-32), which is required by the spec.
+ *
+ * It can be consumed by a ReadableStream's pipeThrough method.
+ */
+export class OdTransformStream extends TransformStream<Uint8Array> {
+  constructor() {
+    const od = 255 - 32;
+    super({
+      transform(chunk, controller) {
+        controller.enqueue(chunk.map(byte => byte ^ od));
       },
     });
   }

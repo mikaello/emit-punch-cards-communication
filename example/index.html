@@ -5,11 +5,17 @@
   </head>
   <body>
     <script type="module" src="./helper.js"></script>
-    <button id="connect-device" onclick="connect()">
+    <button id="connect-device-250" onclick="connect250()">
       Connect to serial device
     </button>
-    <button id="disconnect-device" onclick="disconnect()">
-      Disconnect to serial device
+    <button id="connect-device-mtr4" onclick="connectMtr4()">
+      Connect to MTR4
+    </button>
+    <button id="disconnect-device-250" onclick="disconnect250()">
+      Disconnect from 250
+    </button>
+    <button id="disconnect-device-mtr4" onclick="disconnectMtr4()">
+      Disconnect from MTR4
     </button>
     <h3>EMIT brikkenummer for sist leste enhet:</h3>
     <p id="last-read-device"></p>
