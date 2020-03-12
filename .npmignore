@@ -1,0 +1,7 @@
+node_modules/
+example/
+__tests__/
+jestSetup/
+jest.config.cjs
+src/
+.git/

@@ -1,6 +1,6 @@
 {
-  "name": "emit-punch-cards-communication",
-  "version": "1.0.0",
+  "name": "@mikaello/emit-punch-cards-communication",
+  "version": "0.0.1",
   "description": "Tools for communicating with EMIT punch cards",
   "main": "dist/index.js",
   "module": "dist/index.js",
