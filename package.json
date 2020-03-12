@@ -2,25 +2,42 @@
   "name": "emit-punch-cards-communication",
   "version": "1.0.0",
   "description": "Tools for communicating with EMIT punch cards",
-  "main": "index.ts",
-  "module": "transform-stream-250.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "type": "module",
   "directories": {
     "example": "example"
   },
   "scripts": {
+    "clean": "rm -rf dist/",
+    "build": "tsc -b",
+    "prepublishOnly": "yarn build",
     "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mikaello/emit-punch-cards-communication.git"
   },
-  "author": "",
+  "keywords": [
+    "emit",
+    "ekt",
+    "orienteering",
+    "serial",
+    "webusb"
+  ],
+  "browserslist": [
+    "last 1 Chrome versions"
+  ],
+  "prettier": {
+    "trailingComma": "all"
+  },
+  "author": "mikaello",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/mikaello/emit-punch-cards-communication/issues"
   },
   "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^25.1.4",
     "jest": "^25.1.0",

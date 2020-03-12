@@ -14,17 +14,13 @@
     "type": "git",
     "url": "git+https://github.com/mikaello/emit-punch-cards-communication.git"
   },
-  "keywords": [
-    "emit",
-    "ekt",
-    "orienteering",
-    "serial",
-    "webusb"
-  ],
   "browserslist": [
     "last 1 Chrome versions"
   ],
-  "author": "",
+  "prettier": {
+    "trailingComma": "all"
+  },
+  "author": "mikaello",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/mikaello/emit-punch-cards-communication/issues"

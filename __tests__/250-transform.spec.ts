@@ -1,5 +1,5 @@
-import { EmitEkt250TransformStream } from "../";
-import { singleSuccess250 } from "../mockdata";
+import { EmitEkt250TransformStream } from "../src/";
+import { singleSuccess250 } from "../src/mockdata";
 
 /**
  * Creates a `ReadableStream` from an `Uint8Array`, useful for testing with mockdata

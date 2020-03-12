@@ -1,4 +1,4 @@
-import { bytesToInt, checkControlCode } from "./byteHandlingUtils.js"; // .js needed for browser
+import { bytesToInt, checkControlCode } from "./byteHandlingUtils";
 
 export type Ecard = {
   ecardNumber: number;
