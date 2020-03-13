@@ -1,13 +1,14 @@
 import {
   Ecard,
   EmitEkt250TransformStream,
-  serialOptions250,
-} from "../transform-stream-250.js"; // .js needed for browser
-import { getSetClockCommand, getStatusCommand } from "../mtr4-commands.js"; // .js needed
+} from "@mikaello/emit-punch-cards-communication";
+import { serialOptions250 } from "@mikaello/emit-punch-cards-communication/dist/transform-stream-250";
+import { serialOptionsMtr4 } from "@mikaello/emit-punch-cards-communication/dist/transform-stream-mtr4";
 import {
-  serialOptionsMtr4,
-  Mtr4TransformStream,
-} from "../transform-stream-mtr4.js"; // .js needed
+  getSetClockCommand,
+  getStatusCommand,
+} from "@mikaello/emit-punch-cards-communication/dist/mtr4-commands";
+import { Mtr4TransformStream } from "@mikaello/emit-punch-cards-communication";
 import { SerialPort, SerialOptions } from "./serial-types";
 
 let port250: SerialPort | null = null;

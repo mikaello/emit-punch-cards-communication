@@ -1,0 +1,6 @@
+Skrive om alle index referanser til å bruke /dist/index
+Legge til ./node_modules/ på alle importer i /dist/**/*.js
+Kopiere over node_modules/@mikaello til dist/ (test ut symlink)
+Legge på .js på alle importer, i både dist/**/*.js (inkludert dist/node_modules/@mikaello)
+
+Alternativt, kopier over package.json til dist og kjør npm publish derfra

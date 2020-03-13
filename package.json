@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf dist/",
     "build": "tsc -b",
-    "prepublishOnly": "yarn build && cp package.json dist && cd dist",
+    "prepublishOnly": "yarn build",
     "test": "jest"
   },
   "repository": {

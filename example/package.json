@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "prestart": "gulp prestart",
+    "startBackup": "serve dist",
     "start": "servor dist index.html 8090 --reload",
     "dev": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,14 +28,19 @@
   },
   "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^7.1.1",
     "@types/node": "^13.9.0",
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
+    "rollup": "^2.0.6",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "serve": "^11.3.0",
     "servor": "^3.2.0",
     "ts-node": "^8.6.2",
+    "tslib": "^1.11.1",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "emit-punch-cards-communication": "link:./../"
+    "@mikaello/emit-punch-cards-communication": "link:./../"
   }
 }
