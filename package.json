@@ -1,6 +1,6 @@
 {
   "name": "@mikaello/emit-punch-cards-communication",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Tools for communicating with EMIT punch cards",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf dist/",
     "build": "tsc -b",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "yarn build && cp package.json dist && cd dist",
     "test": "jest"
   },
   "repository": {
