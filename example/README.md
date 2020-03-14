@@ -1,4 +1,4 @@
-# Demo communication with 250 device
+# Demo - communication with 250 and MTR4 device
 
 Transpile code and start server:
 
@@ -8,13 +8,14 @@ yarn start
 ```
 
 You can now open [http://localhost:8090](http://localhost:8090) and start
-testing your local 250 device.
+testing your local 250 or MTR4 device.
 
-To continously watch files for changes, you need to start gulp (in another tab):
+To continuously watch files for changes, you need to start Gulp (in another tab):
 
 ```shell
 yarn dev
 ```
 
-When `yarn dev` is run you can change code in both this folder and the folder on
-up (`../*.ts`). The server will automatically reload when gulp detects changes.
+When `yarn dev` is ran, Gulp will start and you can change code in both this _example_ folder and the in the library (one
+up (`../src/*.ts`)). Gulp is watching changes for all TS-files, and will start the correct task according to
+which file is changed. The server will automatically reload when files are changed.
