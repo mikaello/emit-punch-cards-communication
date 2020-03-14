@@ -7,17 +7,14 @@ const resolve = require("@rollup/plugin-node-resolve");
 const tsProjectLib = ts.createProject("../tsconfig.json", {
   rootDir: "../",
 });
-
-const transpileTypescript = (files: string, project: any) =>
-  src(files)
-    .pipe(project())
-    .pipe(dest("../dist"));
-
 const LIB_SOURCE = "../src/**/*.ts";
 
-const transpileLib = () => transpileTypescript(LIB_SOURCE, tsProjectLib);
+const transpileLibTypescript = () =>
+  src(LIB_SOURCE)
+    .pipe(tsProjectLib())
+    .pipe(dest("../dist"));
 
-const buildRollup = (done: () => void) =>
+const buildExample = (done: () => void) =>
   rollup
     .rollup({
       input: "./helper.ts",
@@ -38,16 +35,14 @@ const copyHtml = () => src("*.html").pipe(dest("./dist"));
 
 task("default", () => {
   watch("*.html", copyHtml);
-  watch(LIB_SOURCE, transpileLib);
+  watch(LIB_SOURCE, transpileLibTypescript);
   watch(
     [
       "*.ts",
       "node_modules/@mikaello/emit-punch-cards-communication/dist/**/*.js",
     ],
-    buildRollup,
+    buildExample,
   );
 });
 
-task("prestart", series(transpileLib, buildRollup, copyHtml));
-
-task("tran", series(transpileLib));
+task("prestart", series(transpileLibTypescript, buildExample, copyHtml));
