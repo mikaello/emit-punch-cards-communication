@@ -1,6 +1,10 @@
 # MTR protocol description
 
-baude 9600, no parity, 8 bit, 1 stop bit.
+| Speed (Baud rate) | Parity    | Bits per character | Stop bits  |
+| ----------------- | --------- | ------------------ | ---------- |
+| 9600 Bd           | No parity | 8 bit              | 1 stop bit |
+
+Data is sent as serial data over USB.
 
 ## Input commands to MTR
 

@@ -1,12 +1,18 @@
 # 250 protocol description
 
-### Type
+| Speed (Baud rate) | Parity    | Bits per character | Stop bits  |
+| ----------------- | --------- | ------------------ | ---------- |
+| 9600 Bd           | No parity | 8 bit              | 2 stop bit |
 
-Regnly EPT system, data from 250 reader with FTDI chip.
+## Type
 
-### Communication settings:
+Regnly EPT system, data from 250 reader with FTDI chip. Data is sent as serial
+data over USB (or RS232).
 
-RS232, baude 9600, no parity, 8 bit, 2 stop bit.
+## Message description:
+
+A message is sent when user places an ecard on 250-device. Messages will be
+continuously sent until user removes the card.
 
 | Byte    | Description                                                                                          | Format                       | Value | Number of bytes |
 | ------- | ---------------------------------------------------------------------------------------------------- | ---------------------------- | ----- | --------------- |

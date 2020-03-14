@@ -29,7 +29,8 @@
     "last 1 Chrome versions"
   ],
   "prettier": {
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "proseWrap": "always"
   },
   "author": "mikaello",
   "license": "GPL-3.0",
