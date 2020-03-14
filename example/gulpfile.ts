@@ -13,7 +13,7 @@ const transpileTypescript = (files: string, project: any) =>
     .pipe(project())
     .pipe(dest("../dist"));
 
-const LIB_SOURCE = "../src/*.ts";
+const LIB_SOURCE = "../src/**/*.ts";
 
 const transpileLib = () => transpileTypescript(LIB_SOURCE, tsProjectLib);
 
