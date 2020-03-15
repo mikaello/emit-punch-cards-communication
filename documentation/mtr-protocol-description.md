@@ -102,8 +102,8 @@ the following format:
 | 34-37 | Prev2SessStart#      |                                                                                                                                     |              | 4               |
 | 38-41 | Prev3SessStart#      |                                                                                                                                     |              | 4               |
 | 42-45 | Prev4SessStart#      |                                                                                                                                     |              | 4               |
-| 46-47 | Prev5SessStart#      |                                                                                                                                     |              | 4               |
-| 48-51 | Prev6SessStart#      |                                                                                                                                     |              | 4               |
+| 46-49 | Prev5SessStart#      |                                                                                                                                     |              | 4               |
+| 50-53 | Prev6SessStart#      |                                                                                                                                     |              | 4               |
 | 54-57 | Prev7SessStart#      |                                                                                                                                     |              | 4               |
 | 58    | Checksum             | Binary SUM (MOD 256) of all bytes including `preamble`                                                                              |              | 1               |
 | 59    | NULL-filler          | Binary `0`. To avoid potential 5 times `0xFF`, making it easier to haunt `preamble`                                                 | 0x00         | 1               |

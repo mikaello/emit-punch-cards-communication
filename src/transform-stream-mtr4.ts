@@ -149,8 +149,42 @@ class Mtr4Unpacker {
     };
   }
 
-  parseStatusMessage(statusMessage: Uint8Array) {
-    // Status message
+  parseStatusMessage(statusMessage: Uint8Array): MtrStatusMessage {
+    const decoder = new TextDecoder("ascii");
+    const packageType = decoder.decode(
+      new DataView(statusMessage.buffer, 5, 1),
+    );
+
+    if (packageType !== PackageType.StatusMessage) {
+      console.error("Wrong package type: " + packageType);
+    }
+
+    const batteryStatus =
+      statusMessage[16] === 0 ? BatterStatus.OK : BatterStatus.Low;
+
+    return {
+      packageSize: statusMessage[4],
+      packageType: PackageType.StatusMessage,
+      mtrId: bytesToInt(new DataView(statusMessage.buffer, 6, 2)),
+      currentTime: bytesToDate(new DataView(statusMessage.buffer, 8, 6)),
+      batteryStatus,
+      recentPackage: bytesToInt(new DataView(statusMessage.buffer, 17, 4)),
+      oldestPackage: bytesToInt(new DataView(statusMessage.buffer, 21, 4)),
+      currentSessionStart: bytesToInt(
+        new DataView(statusMessage.buffer, 25, 4),
+      ),
+      prev1SessionStart: bytesToInt(new DataView(statusMessage.buffer, 29, 4)),
+      prev2SessionStart: bytesToInt(new DataView(statusMessage.buffer, 33, 4)),
+      prev3SessionStart: bytesToInt(new DataView(statusMessage.buffer, 37, 4)),
+      prev4SessionStart: bytesToInt(new DataView(statusMessage.buffer, 41, 4)),
+      prev5SessionStart: bytesToInt(new DataView(statusMessage.buffer, 45, 4)),
+      prev6SessionStart: bytesToInt(new DataView(statusMessage.buffer, 49, 4)),
+      prev7SessionStart: bytesToInt(new DataView(statusMessage.buffer, 53, 4)),
+      validTransferCheckByte: checkControlCode(
+        new DataView(statusMessage.buffer, 0, 57),
+        statusMessage[57],
+      ),
+    };
   }
 
   addBinaryData(uint8Array: Uint8Array) {
@@ -189,12 +223,11 @@ class Mtr4Unpacker {
         : null;
 
     if (currentReadLength === 59 && messageType === PackageType.StatusMessage) {
-      console.log("we have a status message");
-      this.parseStatusMessage(
+      const statusMessage = this.parseStatusMessage(
         getRangeFromRingBuffer(this.data, this.readPosition, 59),
       );
 
-      this.onChunk && this.onChunk(<MtrStatusMessage>{});
+      this.onChunk && this.onChunk(statusMessage);
     } else if (
       currentReadLength === 234 &&
       messageType === PackageType.EcardMtr

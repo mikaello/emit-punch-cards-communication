@@ -1,6 +1,10 @@
 import { Mtr4TransformStream } from "../src";
 import { singleSuccessMtr4, mtr4StatusMessage } from "../src/mockdata";
-import { PackageType, EcardMtr } from "../src/transform-stream-mtr4";
+import {
+  PackageType,
+  EcardMtr,
+  MtrStatusMessage,
+} from "../src/transform-stream-mtr4";
 
 /**
  * Creates a `ReadableStream` from an `Uint8Array`, useful for testing with mockdata
@@ -25,7 +29,23 @@ describe("Mtr4TransformStream", () => {
 
     const ecard = value as EcardMtr;
 
+    expect(ecard.packageType).toBe(PackageType.EcardMtr);
     expect(ecard.ecardNumber).toBe(208560);
+    expect(ecard.validTransferCheckByte).toBeTruthy();
+  });
+
+  test("that the stream can read a status message", async () => {
+    const reader = createReadableStream(mtr4StatusMessage)
+      .pipeThrough(new Mtr4TransformStream())
+      .getReader();
+
+    const { value } = await reader.read();
+    reader.releaseLock();
+
+    const ecard = value as MtrStatusMessage;
+
+    expect(ecard.packageType).toBe(PackageType.StatusMessage);
+    expect(ecard.mtrId).toBe(14209);
     expect(ecard.validTransferCheckByte).toBeTruthy();
   });
 });
