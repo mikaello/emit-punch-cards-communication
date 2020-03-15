@@ -59,25 +59,25 @@ An MTR message is an e-card reading (either by user placing ecard on MTR, or by
 issuing a command to MTR to retrieve from history), and have the following
 format:
 
-| Byte    | Name            | Description                                                                                                                              | Value        | Number of bytes |
-| ------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- |
-| 1-4     | preamble        | 4 times `0xFF` never occur "inside" a message, this can be used to resynchronize logic if a connection is broken                         | 0xFF         | 4               |
-| 5       | package-size    | number of bytes excluding `preamble` ( = 230)                                                                                            | 0xE6         | 1               |
-| 6       | package-type    | `M` as "MTR-datamessage".                                                                                                                | 0x4D         | 1               |
-| 7-8     | MTR-id          | Serial number of MTR2; Least significant byte first                                                                                      |              | 2               |
-| 9-14    | timestamp       | Binary Year, Month, Day, Hour, Minute, Second                                                                                            |              | 6               |
-| 15-16   | TS milliseconds | Milliseconds, NOT YET USED, WILL BE `0` IN THIS VERSION.                                                                                 | 0x00         | 2               |
-| 17-20   | package no.     | Binary Counter, from `1` and up; Least significant byte first                                                                            |              | 4               |
-| 21-23   | e-card no.      | Binary, Least significant byte first                                                                                                     |              | 3               |
-| 24      | Production week | `0-53` (`0` when package is retrived from "history", e.g. when spooling)                                                                 |              | 1               |
-| 25      | Production year | `94-99`,`0-..X` (`0` when package is retrived from "history", e.g. when spooling)                                                        |              | 1               |
-| 26      | e-card head sum | head check sum <TODO: how to calculate?> (value `0` when package is retrived from "history", e.g. when spooling)                         | 0x00 or 0x01 | 1               |
-| 27-176  | control-codes   | Control codes and times. 50 x (1 byte binary control code 0-250 and 2 bytes binary time 0-65534 sec). Unused controls and times are `0`. |              | 150             |
-| 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrived from "history" (see [ASCII-string](#ascii-string-in-mtr-message))               |              | 56              |
-| 233     | Checksum        | Binary SUM (MOD 256) of all bytes including `preamble`                                                                                   |              | 1               |
-| 234     | NULL-filler     | Binary `0`. To avoid potential 5 times `0xFF`, making it easier to haunt `preamble`                                                      | 0x00         | 1               |
-|         |                 |                                                                                                                                          |              |                 |
-|         |                 | **SUM**                                                                                                                                  |              | **234**         |
+| Byte    | Name            | Description                                                                                                                              | Value | Number of bytes |
+| ------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----- | --------------- |
+| 1-4     | preamble        | 4 times `0xFF` never occur "inside" a message, this can be used to resynchronize logic if a connection is broken                         | 0xFF  | 4               |
+| 5       | package-size    | number of bytes excluding `preamble` ( = 230)                                                                                            | 0xE6  | 1               |
+| 6       | package-type    | `M` as "MTR-datamessage".                                                                                                                | 0x4D  | 1               |
+| 7-8     | MTR-id          | Serial number of MTR2; Least significant byte first                                                                                      |       | 2               |
+| 9-14    | timestamp       | Binary Year, Month, Day, Hour, Minute, Second                                                                                            |       | 6               |
+| 15-16   | TS milliseconds | Milliseconds, NOT YET USED, WILL BE `0` IN THIS VERSION.                                                                                 | 0x00  | 2               |
+| 17-20   | package no.     | Binary Counter, from `1` and up; Least significant byte first                                                                            |       | 4               |
+| 21-23   | e-card no.      | Binary, Least significant byte first                                                                                                     |       | 3               |
+| 24      | Production week | `0-53` (`0` when package is retrived from "history", e.g. when spooling)                                                                 |       | 1               |
+| 25      | Production year | `94-99`,`0-..X` (`0` when package is retrived from "history", e.g. when spooling)                                                        |       | 1               |
+| 26      | e-card head sum | head check sum <TODO: how to calculate?> (value `0` when package is retrived from "history", e.g. when spooling)                         |       | 1               |
+| 27-176  | control-codes   | Control codes and times. 50 x (1 byte binary control code 0-250 and 2 bytes binary time 0-65534 sec). Unused controls and times are `0`. |       | 150             |
+| 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrived from "history" (see [ASCII-string](#ascii-string-in-mtr-message))               |       | 56              |
+| 233     | Checksum        | Binary SUM (MOD 256) of all bytes before this byte (including `preamble`) should equal this byte (NB. different than 250-device)         |       | 1               |
+| 234     | NULL-filler     | Binary `0`. To avoid potential 5 times `0xFF`, making it easier to haunt `preamble`                                                      | 0x00  | 1               |
+|         |                 |                                                                                                                                          |       |                 |
+|         |                 | **SUM**                                                                                                                                  |       | **234**         |
 
 All bytes must be XOR-ed with OD (255 - 32).
 
@@ -108,7 +108,7 @@ the following format:
 | 58    | Checksum             | Binary SUM (MOD 256) of all bytes including `preamble`                                                                              |              | 1               |
 | 59    | NULL-filler          | Binary `0`. To avoid potential 5 times `0xFF`, making it easier to haunt `preamble`                                                 | 0x00         | 1               |
 |       |                      |                                                                                                                                     |              |                 |
-|       |                      | **SUM**                                                                                                                             |              | **234**         |
+|       |                      | **SUM**                                                                                                                             |              | **59**          |
 
 NB: All names ending with `#` denotes a number with the least signicant byte
 first. This number is meant to be used with the `/SBxxxx` and `/GBxxxx` commands

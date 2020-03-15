@@ -35,13 +35,44 @@ export const bytesToInt = (view: DataView) => {
 };
 
 /**
- * Checking that sum of all bytes in provided view modulo 256 equals 0.
+ * Converts 6 bytes to a JavaScript Date-object. The 6 bytes must be as follows:
+ * * `0`, year: values accepted are 90 to 99 (1990..1999) and 0 to 53 (2000..2053)
+ * * `1`, month: values accepted are 1 to 12
+ * * `2`, daynumber: values accepted are 1 to 31
+ * * `3`, hour: values accepted are 0 to 23
+ * * `4`, minute: values accepted are 0 59
+ * * `5`, second: values accepted are 0 59
  */
-export const checkControlCode = (view: DataView) => {
+export const bytesToDate = (view: DataView) => {
+  if (view.byteLength !== 6) {
+    throw new Error(
+      `Can't convert view ${view.byteLength} bytes to date, got ${view}`,
+    );
+  }
+
+  // possible year values are 90 to 99 (1990..1999) and 0 to 53 (2000..2053)
+  const rawYear = view.getUint8(0);
+  const year = rawYear >= 90 ? 1900 + rawYear : 2000 + rawYear;
+
+  return new Date(
+    year,
+    view.getUint8(1) - 1, // Month (zero indexed in JavaScript)
+    view.getUint8(2), // Day of month
+    view.getUint8(3), // Hour
+    view.getUint8(4), // Minute
+    view.getUint8(5), // Seconds
+    0, // Milliseconds
+  );
+};
+
+/**
+ * Checking that sum of all bytes in provided view modulo 256 equals controlByte.
+ */
+export const checkControlCode = (view: DataView, controlByte: number) => {
   let sum = 0;
   for (let i = 0; i < view.byteLength; i++) {
     sum += view.getUint8(i);
   }
 
-  return sum % 256 === 0;
+  return sum % 256 === controlByte;
 };

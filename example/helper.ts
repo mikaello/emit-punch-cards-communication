@@ -1,5 +1,5 @@
 import {
-  Ecard,
+  Ecard250,
   EmitEkt250TransformStream,
 } from "@mikaello/emit-punch-cards-communication";
 import { serialOptions250 } from "@mikaello/emit-punch-cards-communication/dist/transform-stream-250";
@@ -13,11 +13,11 @@ import { SerialPort, SerialOptions } from "./serial-types";
 
 let port250: SerialPort | null = null;
 let inputDone250: Promise<void> | null = null;
-let reader250: ReadableStreamReader<Ecard> | null = null;
+let reader250: ReadableStreamReader<Ecard250> | null = null;
 
 let portMtr4: SerialPort | null = null;
 let inputDoneMtr4: Promise<void> | null = null;
-let readerMtr4: ReadableStreamReader<Ecard> | null = null;
+let readerMtr4: ReadableStreamReader<Ecard250> | null = null;
 
 export let connect250 = async () => {
   try {

@@ -1,6 +1,7 @@
 import { bytesToInt, checkControlCode } from "./byteHandlingUtils";
+import { getControlCodeInformation } from "./transform-stream-utils";
 
-export type Ecard = {
+export type Ecard250 = {
   ecardNumber: number;
   ecardProductionWeek: number;
   ecardProductionYear: number;
@@ -31,8 +32,8 @@ const ecardLength = 217;
 class EmitEKT250Unpacker {
   sendMetadataWhenRead: boolean;
   data: Uint8Array;
-  unpackedQueue: Array<Ecard>;
-  onChunk: null | ((chunk: Ecard) => void);
+  unpackedQueue: Array<Ecard250>;
+  onChunk: null | ((chunk: Ecard250) => void);
   position: number;
   previousWasStartByte: boolean;
   parsedEcardMetadata: boolean;
@@ -90,43 +91,7 @@ class EmitEKT250Unpacker {
     this.checkForChunks();
   }
 
-  getControlCodeInformation(view: DataView) {
-    let codes: Array<{ code: number; time: number }> = [];
-    for (let i = 0; i < view.byteLength; i += 3) {
-      const code = view.getUint8(i);
-      if (i > 0 && code === 0) {
-        break;
-      }
-
-      const time = (view.getUint8(i + 2) << 8) | view.getUint8(i + 1);
-      codes.push({ code, time });
-    }
-
-    if (codes.length > 0) {
-      // The last stamped code will occur in duplicates (number of duplicates will
-      // depend on how long the runner let his runner unit be on the EKT-device)
-      // So removing duplicates of last control, since only the first punch matter
-      const { code: finishCode } = codes[codes.length - 1];
-      const indexOfFirstPunchOfLastControl = codes.findIndex(
-        ({ code }) => code === finishCode,
-      );
-      codes = codes.filter(
-        ({ code }, index) =>
-          code !== finishCode || index === indexOfFirstPunchOfLastControl,
-      );
-    }
-
-    return codes;
-  }
-
-  parseEcard(): Ecard {
-    const checkByte = checkControlCode(new DataView(this.data.buffer, 2, 8));
-    const ecardNumber = bytesToInt(new DataView(this.data.buffer, 2, 3));
-    const ecardProductionWeek = this.data[6];
-    const ecardProductionYear = this.data[7];
-    const controlCodes = this.getControlCodeInformation(
-      new DataView(this.data.buffer, 10, 150),
-    );
+  parseEcard(): Ecard250 {
     const decoder = new TextDecoder("ascii");
     const emitTimeSystemString = decoder.decode(
       new DataView(this.data.buffer, 160, 32),
@@ -136,22 +101,30 @@ class EmitEKT250Unpacker {
     const disp3 = decoder.decode(new DataView(this.data.buffer, 208, 8));
 
     return {
-      ecardNumber,
-      ecardProductionYear,
-      ecardProductionWeek,
-      validEcardCheckByte: checkByte,
-      controlCodes,
+      ecardNumber: bytesToInt(new DataView(this.data.buffer, 2, 3)),
+      ecardProductionYear: this.data[6],
+      ecardProductionWeek: this.data[7],
+      validEcardCheckByte: checkControlCode(
+        new DataView(this.data.buffer, 2, 8),
+        0,
+      ),
+      controlCodes: getControlCodeInformation(
+        new DataView(this.data.buffer, 10, 150),
+      ),
       emitTimeSystemString,
       disp1,
       disp2,
       disp3,
-      validTransferCheckByte: checkControlCode(new DataView(this.data.buffer)),
+      validTransferCheckByte: checkControlCode(
+        new DataView(this.data.buffer),
+        0,
+      ),
       finishedReading: true,
     };
   }
 
-  parseEcardMetadata(): Ecard {
-    const checkByte = checkControlCode(new DataView(this.data.buffer, 2, 8));
+  parseEcardMetadata(): Ecard250 {
+    const checkByte = checkControlCode(new DataView(this.data.buffer, 2, 8), 0);
     const ecardNumber = bytesToInt(new DataView(this.data.buffer, 2, 3));
     const ecardProductionWeek = this.data[6];
     const ecardProductionYear = this.data[7];
@@ -206,7 +179,7 @@ class EmitEKT250Unpacker {
  */
 export class EmitEkt250TransformStream extends TransformStream<
   Uint8Array,
-  Ecard
+  Ecard250
 > {
   /**
    * @param {boolean} sendMetadataWhenRead If true, objects containing only
