@@ -6,6 +6,7 @@ import {
   serialOptionsMtr4,
   EcardMtr,
   MtrStatusMessage,
+  PackageType,
 } from "@mikaello/emit-punch-cards-communication";
 import { SerialPort, SerialOptions } from "./serial-types";
 import { getStatusCommand } from "@mikaello/emit-punch-cards-communication/dist/mtr4-commands";
@@ -18,7 +19,7 @@ let portMtr4: SerialPort | null = null;
 let inputDoneMtr4: Promise<void> | null = null;
 let readerMtr4: ReadableStreamReader<EcardMtr | MtrStatusMessage> | null = null;
 
-export let connect250 = async () => {
+export const connect250 = async () => {
   try {
     port250 = await navigator.serial.requestPort({
       /* filters: [
@@ -30,8 +31,9 @@ export let connect250 = async () => {
     });
 
     await port250.open(<SerialOptions>serialOptions250);
+    toggleHtmlElementsWithId(["connect-device-250", "disconnect-device-250"]);
 
-    let emitTransformer = new EmitEkt250TransformStream();
+    let emitTransformer = new EmitEkt250TransformStream(false);
     inputDone250 = port250.readable.pipeTo(emitTransformer.writable);
     reader250 = emitTransformer.readable.getReader();
 
@@ -45,8 +47,7 @@ export let connect250 = async () => {
 
       if (value) {
         console.log("250 value", value);
-        const element = document.getElementById("last-read-device");
-        element.innerText = value.ecardNumber + "";
+        appendCardToList(value);
       }
     }
 
@@ -60,7 +61,7 @@ export let connect250 = async () => {
 /**
  * Credits to the web-serial Codelab: https://codelabs.developers.google.com/codelabs/web-serial/#0
  */
-export let disconnect250 = async () => {
+export const disconnect250 = async () => {
   if (reader250 && inputDone250 && port250) {
     await reader250.cancel();
     await inputDone250.catch(() => {});
@@ -69,6 +70,7 @@ export let disconnect250 = async () => {
 
     await port250?.close();
     port250 = null;
+    toggleHtmlElementsWithId(["connect-device-250", "disconnect-device-250"]);
   } else {
     console.error(
       "something is not defined when disconnecting 250 (reader/inputDone/port)",
@@ -79,7 +81,7 @@ export let disconnect250 = async () => {
   }
 };
 
-export let connectMtr4 = async () => {
+export const connectMtr4 = async () => {
   try {
     portMtr4 = await navigator.serial.requestPort({
       /* filters: [
@@ -93,6 +95,7 @@ export let connectMtr4 = async () => {
     console.log(portMtr4);
 
     await portMtr4.open(<SerialOptions>serialOptionsMtr4);
+    toggleHtmlElementsWithId(["connect-device-mtr4", "disconnect-device-mtr4"]);
 
     let emitTransformer = new Mtr4TransformStream();
     inputDoneMtr4 = portMtr4.readable.pipeTo(emitTransformer.writable);
@@ -114,9 +117,9 @@ export let connectMtr4 = async () => {
 
       if (value) {
         console.log("MTR4 value", value);
-        //console.log("value " + value.length, value);
-        //const element = document.getElementById("last-read-device");
-        //element.innerText = value.ecardNumber + "";
+        if (value.packageType === PackageType.EcardMtr) {
+          appendCardToList(value);
+        }
       }
     }
 
@@ -130,7 +133,7 @@ export let connectMtr4 = async () => {
 /**
  * Credits to the web-serial Codelab: https://codelabs.developers.google.com/codelabs/web-serial/#0
  */
-export let disconnectMtr4 = async () => {
+export const disconnectMtr4 = async () => {
   if (readerMtr4 && inputDoneMtr4 && portMtr4) {
     await readerMtr4.cancel();
     await inputDoneMtr4.catch(() => {});
@@ -139,6 +142,7 @@ export let disconnectMtr4 = async () => {
 
     await portMtr4?.close();
     portMtr4 = null;
+    toggleHtmlElementsWithId(["connect-device-mtr4", "disconnect-device-mtr4"]);
   } else {
     console.error(
       "something is not defined when disconnecting MTR4 (reader/inputDone/port)",
@@ -147,6 +151,38 @@ export let disconnectMtr4 = async () => {
       portMtr4,
     );
   }
+};
+
+const appendCardToList = (ecard: Ecard250 | EcardMtr) => {
+  const cardId = document.createElement("td");
+  cardId.innerText = ecard.ecardNumber + "";
+  const cardYear = document.createElement("td");
+  cardYear.innerText = ecard.ecardProductionYear + "";
+  const cardWeek = document.createElement("td");
+  cardWeek.innerText = ecard.ecardProductionWeek + "";
+
+  const cardRow = document.createElement("tr");
+  cardRow.append(cardId, cardYear, cardWeek);
+
+  ecard.controlCodes.forEach(({ code }) => {
+    const control = document.createElement("td");
+    control.innerText = code + "";
+    cardRow.append(control);
+  });
+
+  const tableBody = document.getElementById("emit-card-list-body");
+  tableBody.prepend(cardRow);
+};
+
+const toggleHtmlElementsWithId = (ids: string[]) => {
+  ids.forEach(id => {
+    const element = document.getElementById(id);
+    if (element.style.display === "none") {
+      element.style.display = "initial";
+    } else {
+      element.style.display = "none";
+    }
+  });
 };
 
 window.connect250 = connect250;

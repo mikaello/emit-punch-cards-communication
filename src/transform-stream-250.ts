@@ -102,8 +102,8 @@ class EmitEKT250Unpacker {
 
     return {
       ecardNumber: bytesToInt(new DataView(this.data.buffer, 2, 3)),
-      ecardProductionYear: this.data[6],
-      ecardProductionWeek: this.data[7],
+      ecardProductionWeek: this.data[6],
+      ecardProductionYear: this.data[7],
       validEcardCheckByte: checkControlCode(
         new DataView(this.data.buffer, 2, 8),
         0,
@@ -125,14 +125,11 @@ class EmitEKT250Unpacker {
 
   parseEcardMetadata(): Ecard250 {
     const checkByte = checkControlCode(new DataView(this.data.buffer, 2, 8), 0);
-    const ecardNumber = bytesToInt(new DataView(this.data.buffer, 2, 3));
-    const ecardProductionWeek = this.data[6];
-    const ecardProductionYear = this.data[7];
 
     return {
-      ecardNumber,
-      ecardProductionWeek,
-      ecardProductionYear,
+      ecardNumber: bytesToInt(new DataView(this.data.buffer, 2, 3)),
+      ecardProductionWeek: this.data[6],
+      ecardProductionYear: this.data[7],
       validEcardCheckByte: checkByte,
       controlCodes: [],
       validTransferCheckByte: false,

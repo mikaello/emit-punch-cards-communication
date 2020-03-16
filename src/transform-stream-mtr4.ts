@@ -52,6 +52,8 @@ export type MtrStatusMessage = {
   validTransferCheckByte: boolean;
 };
 
+export type MtrTypes = EcardMtr | MtrStatusMessage;
+
 /** Number of bytes that an ecard reading takes */
 const ecardSize = 234;
 
