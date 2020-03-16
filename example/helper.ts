@@ -1,15 +1,14 @@
 import {
   Ecard250,
   EmitEkt250TransformStream,
+  Mtr4TransformStream,
+  serialOptions250,
+  serialOptionsMtr4,
+  EcardMtr,
+  MtrStatusMessage,
 } from "@mikaello/emit-punch-cards-communication";
-import { serialOptions250 } from "@mikaello/emit-punch-cards-communication/dist/transform-stream-250";
-import { serialOptionsMtr4 } from "@mikaello/emit-punch-cards-communication/dist/transform-stream-mtr4";
-import {
-  getSetClockCommand,
-  getStatusCommand,
-} from "@mikaello/emit-punch-cards-communication/dist/mtr4-commands";
-import { Mtr4TransformStream } from "@mikaello/emit-punch-cards-communication";
 import { SerialPort, SerialOptions } from "./serial-types";
+import { getStatusCommand } from "@mikaello/emit-punch-cards-communication/dist/mtr4-commands";
 
 let port250: SerialPort | null = null;
 let inputDone250: Promise<void> | null = null;
@@ -17,7 +16,7 @@ let reader250: ReadableStreamReader<Ecard250> | null = null;
 
 let portMtr4: SerialPort | null = null;
 let inputDoneMtr4: Promise<void> | null = null;
-let readerMtr4: ReadableStreamReader<Ecard250> | null = null;
+let readerMtr4: ReadableStreamReader<EcardMtr | MtrStatusMessage> | null = null;
 
 export let connect250 = async () => {
   try {
@@ -45,7 +44,7 @@ export let connect250 = async () => {
       }
 
       if (value) {
-        console.log("value", value);
+        console.log("250 value", value);
         const element = document.getElementById("last-read-device");
         element.innerText = value.ecardNumber + "";
       }
@@ -114,6 +113,7 @@ export let connectMtr4 = async () => {
       }
 
       if (value) {
+        console.log("MTR4 value", value);
         //console.log("value " + value.length, value);
         //const element = document.getElementById("last-read-device");
         //element.innerText = value.ecardNumber + "";

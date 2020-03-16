@@ -131,8 +131,8 @@ class EmitEKT250Unpacker {
 
     return {
       ecardNumber,
-      ecardProductionYear,
       ecardProductionWeek,
+      ecardProductionYear,
       validEcardCheckByte: checkByte,
       controlCodes: [],
       validTransferCheckByte: false,

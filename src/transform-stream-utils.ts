@@ -1,4 +1,12 @@
-import { PackageType } from "./transform-stream-mtr4";
+export enum BatterStatus {
+  OK = 0,
+  Low = 1,
+}
+
+export enum PackageType {
+  StatusMessage = "S",
+  EcardMtr = "M",
+}
 
 export const getControlCodeInformation = (view: DataView) => {
   let codes: Array<{ code: number; time: number }> = [];

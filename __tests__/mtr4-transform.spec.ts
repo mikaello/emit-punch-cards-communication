@@ -1,10 +1,11 @@
 import { Mtr4TransformStream } from "../src";
-import { singleSuccessMtr4, mtr4StatusMessage } from "../src/mockdata";
 import {
-  PackageType,
-  EcardMtr,
-  MtrStatusMessage,
-} from "../src/transform-stream-mtr4";
+  singleSuccessMtr4,
+  doubleSuccessMtr4,
+  mtr4StatusMessage,
+} from "../src/mockdata";
+import { EcardMtr, MtrStatusMessage } from "../src/transform-stream-mtr4";
+import { PackageType } from "./../src/transform-stream-utils";
 
 /**
  * Creates a `ReadableStream` from an `Uint8Array`, useful for testing with mockdata
@@ -32,6 +33,27 @@ describe("Mtr4TransformStream", () => {
     expect(ecard.packageType).toBe(PackageType.EcardMtr);
     expect(ecard.ecardNumber).toBe(208560);
     expect(ecard.validTransferCheckByte).toBeTruthy();
+  });
+
+  test("that the stream can read two ecards", async () => {
+    const reader = createReadableStream(doubleSuccessMtr4)
+      .pipeThrough(new Mtr4TransformStream())
+      .getReader();
+
+    const { value: ecard_1 } = await reader.read();
+    const { value: ecard_2 } = await reader.read();
+    reader.releaseLock();
+
+    const ecard1 = ecard_1 as EcardMtr;
+    const ecard2 = ecard_2 as EcardMtr;
+
+    expect(ecard1.packageType).toBe(PackageType.EcardMtr);
+    expect(ecard1.ecardNumber).toBe(208560);
+    expect(ecard1.validTransferCheckByte).toBeTruthy();
+
+    expect(ecard2.packageType).toBe(PackageType.EcardMtr);
+    expect(ecard2.ecardNumber).toBe(206853);
+    expect(ecard2.validTransferCheckByte).toBeTruthy();
   });
 
   test("that the stream can read a status message", async () => {

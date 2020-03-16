@@ -6,6 +6,8 @@ import {
   addToRingBuffer,
   getRangeFromRingBuffer,
   getMessageType,
+  PackageType,
+  BatterStatus,
 } from "./transform-stream-utils";
 
 export const serialOptionsMtr4 = {
@@ -14,16 +16,6 @@ export const serialOptionsMtr4 = {
   parity: "none",
   databits: 8,
 };
-
-export enum BatterStatus {
-  OK = 0,
-  Low = 1,
-}
-
-export enum PackageType {
-  StatusMessage = "S",
-  EcardMtr = "M",
-}
 
 export type EcardMtr = {
   packageSize: number;
@@ -60,8 +52,11 @@ export type MtrStatusMessage = {
   validTransferCheckByte: boolean;
 };
 
-const ecardLength = 234;
-const statusMessageLength = 59;
+/** Number of bytes that an ecard reading takes */
+const ecardSize = 234;
+
+/** Number of bytes that a status message takes */
+const statusMessageSize = 59;
 
 class Mtr4Unpacker {
   /** Will be used as a ringbuffer */
@@ -79,7 +74,7 @@ class Mtr4Unpacker {
     this.onChunk = null;
     this.consoleData = new Uint8Array(0);
     this.timeout = null;
-    this.data = new Uint8Array(ecardLength * 3);
+    this.data = new Uint8Array(ecardSize * 3);
     this.readPosition = 0;
     this.writePosition = 0;
   }
@@ -132,8 +127,8 @@ class Mtr4Unpacker {
       batteryStatus,
       packageNumber: bytesToInt(new DataView(ecardData.buffer, 16, 4)),
       ecardNumber: bytesToInt(new DataView(ecardData.buffer, 20, 3)),
-      ecardProductionYear: ecardData[23],
-      ecardProductionWeek: ecardData[24],
+      ecardProductionWeek: ecardData[23],
+      ecardProductionYear: ecardData[24],
       validEcardHeadCheckByte: checkControlCode(
         new DataView(ecardData.buffer, 4, 21),
         ecardData[25],
@@ -199,8 +194,8 @@ class Mtr4Unpacker {
     const newReadPosition = checkForNewReadPosition(
       4,
       new DataView(this.data.buffer),
-      uint8Array.byteLength,
       this.writePosition,
+      uint8Array.byteLength,
     );
     if (newReadPosition != null) {
       this.readPosition = newReadPosition;
@@ -222,18 +217,21 @@ class Mtr4Unpacker {
         ? getMessageType(this.data, this.readPosition, 5)
         : null;
 
-    if (currentReadLength === 59 && messageType === PackageType.StatusMessage) {
+    if (
+      currentReadLength === statusMessageSize &&
+      messageType === PackageType.StatusMessage
+    ) {
       const statusMessage = this.parseStatusMessage(
-        getRangeFromRingBuffer(this.data, this.readPosition, 59),
+        getRangeFromRingBuffer(this.data, this.readPosition, statusMessageSize),
       );
 
       this.onChunk && this.onChunk(statusMessage);
     } else if (
-      currentReadLength === 234 &&
+      currentReadLength === ecardSize &&
       messageType === PackageType.EcardMtr
     ) {
       const ecard = this.parseEcard(
-        getRangeFromRingBuffer(this.data, this.readPosition, 234),
+        getRangeFromRingBuffer(this.data, this.readPosition, ecardSize),
       );
       this.onChunk && this.onChunk(ecard);
     }

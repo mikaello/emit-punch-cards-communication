@@ -68,7 +68,7 @@ export const bytesToDate = (view: DataView) => {
 /**
  * Checking that sum of all bytes in provided view modulo 256 equals controlByte.
  */
-export const checkControlCode = (view: DataView, controlByte: number) => {
+export const checkControlCode = (view: DataView, controlByte: number = 0) => {
   let sum = 0;
   for (let i = 0; i < view.byteLength; i++) {
     sum += view.getUint8(i);
