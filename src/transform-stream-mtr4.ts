@@ -61,7 +61,7 @@ const ecardSize = 234;
 const statusMessageSize = 59;
 
 class Mtr4Unpacker {
-  /** Will be used as a ringbuffer */
+  /** Ringbuffer */
   data: Uint8Array;
   /** Current e-card og status message will start from this position */
   readPosition: number;

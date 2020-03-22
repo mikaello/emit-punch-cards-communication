@@ -1,5 +1,11 @@
 import { bytesToInt, checkControlCode } from "./byteHandlingUtils";
-import { getControlCodeInformation } from "./transform-stream-utils";
+import {
+  getControlCodeInformation,
+  addToRingBuffer,
+  checkForNewReadPosition,
+  ringBufferReadLength,
+  getRangeFromRingBuffer,
+} from "./transform-stream-utils";
 
 export type Ecard250 = {
   ecardNumber: number;
@@ -30,22 +36,28 @@ const ecardLength = 217;
  * Credits: https://github.com/mdn/dom-examples/blob/master/streams/png-transform-stream/png-transform-stream.js
  */
 class EmitEKT250Unpacker {
-  sendMetadataWhenRead: boolean;
+  /** Ringbuffer */
   data: Uint8Array;
+  /** Current e-card og status message will start from this position */
+  readPosition: number;
+  /** New data will be written to this position */
+  writePosition: number;
+
+  /** Option to send metadata as soon as it is read */
+  sendMetadataWhenRead: boolean;
+  parsedEcardMetadata: boolean;
+
   unpackedQueue: Array<Ecard250>;
   onChunk: null | ((chunk: Ecard250) => void);
-  position: number;
-  previousWasStartByte: boolean;
-  parsedEcardMetadata: boolean;
 
   /** @see `EmitEkt250TransformStream` for description of `sendMetadataWhenRead` */
   constructor(sendMetadataWhenRead: boolean) {
     this.sendMetadataWhenRead = sendMetadataWhenRead;
-    this.data = new Uint8Array(ecardLength);
+    this.data = new Uint8Array(ecardLength * 3);
+    this.readPosition = 0;
+    this.writePosition = 0;
     this.unpackedQueue = [];
     this.onChunk = null;
-    this.position = 0;
-    this.previousWasStartByte = false;
     this.parsedEcardMetadata = false;
   }
 
@@ -55,79 +67,64 @@ class EmitEKT250Unpacker {
    * @param {Uint8Array} uint8Array The data to add.
    */
   addBinaryData(uint8Array: Uint8Array) {
-    let newPosition = this.position + uint8Array.length;
-    if (newPosition >= ecardLength + 1) {
-      // Crop of new reading, this will make that new reading corrupt, user will have to rescan card
-      console.error("corrupt reading", uint8Array, this.position, newPosition);
-      uint8Array = uint8Array.slice(
-        0,
-        uint8Array.length - (newPosition - ecardLength),
-      );
+    const newWritePosition = addToRingBuffer(
+      this.data,
+      uint8Array,
+      this.writePosition,
+    );
+
+    const newReadPosition = checkForNewReadPosition(
+      2,
+      new DataView(this.data.buffer),
+      this.writePosition,
+      uint8Array.byteLength,
+    );
+    if (newReadPosition != null) {
+      this.readPosition = newReadPosition;
     }
 
-    for (let i = 0; i < uint8Array.length; i++) {
-      if (Number(uint8Array[i]) === 0xff) {
-        if (this.previousWasStartByte) {
-          if (this.position !== 1 && !(this.position === 0 && i === 1)) {
-            // Previous e-card was not fully read, new e-card reading started
-            this.position = 1;
-            this.data[0] = 0xff;
-            uint8Array = uint8Array.slice(i);
-            newPosition = uint8Array.byteLength + 1;
-            this.parsedEcardMetadata = false;
-            break;
-          }
-        } else {
-          this.previousWasStartByte = true;
-        }
-      } else {
-        this.previousWasStartByte = false;
-      }
-    }
-
-    this.data.set(uint8Array, this.position);
-    this.position = newPosition;
+    this.writePosition = newWritePosition;
 
     this.checkForChunks();
   }
 
-  parseEcard(): Ecard250 {
+  parseEcard(ecardData: Uint8Array): Ecard250 {
     const decoder = new TextDecoder("ascii");
     const emitTimeSystemString = decoder.decode(
-      new DataView(this.data.buffer, 160, 32),
+      new DataView(ecardData.buffer, 160, 32),
     );
-    const disp1 = decoder.decode(new DataView(this.data.buffer, 192, 8));
-    const disp2 = decoder.decode(new DataView(this.data.buffer, 200, 8));
-    const disp3 = decoder.decode(new DataView(this.data.buffer, 208, 8));
+    const disp1 = decoder.decode(new DataView(ecardData.buffer, 192, 8));
+    const disp2 = decoder.decode(new DataView(ecardData.buffer, 200, 8));
+    const disp3 = decoder.decode(new DataView(ecardData.buffer, 208, 8));
 
     return {
-      ecardNumber: bytesToInt(new DataView(this.data.buffer, 2, 3)),
+      ecardNumber: bytesToInt(new DataView(ecardData.buffer, 2, 3)),
       ecardProductionWeek: this.data[6],
       ecardProductionYear: this.data[7],
       validEcardCheckByte: checkControlCode(
-        new DataView(this.data.buffer, 2, 8),
+        new DataView(ecardData.buffer, 2, 8),
         0,
       ),
       controlCodes: getControlCodeInformation(
-        new DataView(this.data.buffer, 10, 150),
+        new DataView(ecardData.buffer, 10, 150),
       ),
       emitTimeSystemString,
       disp1,
       disp2,
       disp3,
       validTransferCheckByte: checkControlCode(
-        new DataView(this.data.buffer),
+        new DataView(ecardData.buffer),
         0,
       ),
       finishedReading: true,
     };
   }
 
-  parseEcardMetadata(): Ecard250 {
-    const checkByte = checkControlCode(new DataView(this.data.buffer, 2, 8), 0);
+  parseEcardMetadata(metadata: Uint8Array): Ecard250 {
+    const checkByte = checkControlCode(new DataView(metadata.buffer, 2, 8), 0);
 
     return {
-      ecardNumber: bytesToInt(new DataView(this.data.buffer, 2, 3)),
+      ecardNumber: bytesToInt(new DataView(metadata.buffer, 2, 3)),
       ecardProductionWeek: this.data[6],
       ecardProductionYear: this.data[7],
       validEcardCheckByte: checkByte,
@@ -141,30 +138,28 @@ class EmitEKT250Unpacker {
    * Checks whether new chunks can be found within the binary data.
    */
   checkForChunks() {
-    if (this.position === ecardLength) {
-      const ecard = this.parseEcard();
-      this.position = 0;
+    const currentReadLength = ringBufferReadLength(
+      this.data.byteLength,
+      this.readPosition,
+      this.writePosition,
+    );
+
+    if (currentReadLength === ecardLength) {
+      const ecard = this.parseEcard(
+        getRangeFromRingBuffer(this.data, this.readPosition, ecardLength),
+      );
       this.parsedEcardMetadata = false;
-      this.unpackedQueue.push(ecard);
+      this.onChunk && this.onChunk(ecard);
     } else if (
       this.sendMetadataWhenRead &&
       !this.parsedEcardMetadata &&
-      this.position >= 10
+      currentReadLength >= 10
     ) {
       this.parsedEcardMetadata = true;
-      const metadata = this.parseEcardMetadata();
-      this.unpackedQueue.push(metadata);
-    } else {
-      return;
-    }
-
-    while (this.unpackedQueue.length > 0) {
-      const ecard = this.unpackedQueue.pop();
-
-      // Inform consumer about the found chunk
-      if (typeof this.onChunk === "function" && ecard) {
-        this.onChunk(ecard);
-      }
+      const metadata = this.parseEcardMetadata(
+        getRangeFromRingBuffer(this.data, this.readPosition, 10),
+      );
+      this.onChunk && this.onChunk(metadata);
     }
   }
 }
