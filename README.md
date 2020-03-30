@@ -29,5 +29,5 @@ especially [helper.ts](./example/helper.ts).
 ## Status
 
 - :white_check_mark: 250 device
-- :x: MTR4 device
+- :white_check_mark: MTR4 device
 - :x: ePost
