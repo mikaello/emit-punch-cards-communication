@@ -16,3 +16,6 @@ glemmer å gå til registrering så vil det likevel være mulig å hente de ut. 
 vil potensielt også kunne fungere som en backup, og ikke minst vil dette kunne
 fungere som en utlesningsmekanisme i seg selv (man kunne hatt ePost-enheten
 liggende ved siden av datamaskinen, ingen kabler!).
+
+
+Kommunikasjon mellom løperbrikke og EKT-enhet foregår på frekvens på 115.2 MHz med en vidje på anslagsvis 28.0 kHz (peak power -76.308334 dB (difference 3.303955 dB)).
