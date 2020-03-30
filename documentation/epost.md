@@ -17,6 +17,8 @@ vil potensielt også kunne fungere som en backup, og ikke minst vil dette kunne
 fungere som en utlesningsmekanisme i seg selv (man kunne hatt ePost-enheten
 liggende ved siden av datamaskinen, ingen kabler!).
 
-EKT-enhet sender kontinuerlig ut radiosignaler på frekvens 115.2 MHz med vidje på anslagsvis 28.0 kHz (peak power -76.308334 dB (difference 3.303955 dB)).
+Ressurser:
 
-TODO: Løperbrikke sender antakeligvis data tilbake på en annen frekvens, og ePost sender deretter ut på en tredje frekvens for å kommunisere med eLink.
+* Reverse engineering with SDR: https://www.youtube.com/watch?v=hT_tu1CzJv4
+* Software Defined Radio with HackRF: https://greatscottgadgets.com/sdr/
+* Radio Hacking: Reverse Engineering Protocols: https://www.youtube.com/watch?v=eVqIe3na_Zk
