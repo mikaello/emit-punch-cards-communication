@@ -8,11 +8,24 @@ export enum PackageType {
   EcardMtr = "M",
 }
 
+/**
+ * Get control codes from a `DataView` with controls ordered in chunks of three
+ * bytes: first byte is control code, the next two bytes are the time from previous
+ * control to this one.
+ *
+ * @param view control codes with corresponding times
+ * @return an array with objects corresponding to the controls in the view
+ */
 export const getControlCodeInformation = (view: DataView) => {
   let codes: Array<{ code: number; time: number }> = [];
   for (let i = 0; i < view.byteLength; i += 3) {
     const code = view.getUint8(i);
+
     if (i > 0 && code === 0) {
+      /*
+       * Only the first control can have code 0. The next occurence of code 0
+       * means that we are finished reading controls.
+       */
       break;
     }
 
@@ -21,9 +34,12 @@ export const getControlCodeInformation = (view: DataView) => {
   }
 
   if (codes.length > 0) {
-    // The last stamped code will occur in duplicates (number of duplicates will
-    // depend on how long the runner let his runner unit be on the EKT-device)
-    // So removing duplicates of last control, since only the first punch matter
+    /*
+     * The last stamped code will occur in duplicates (number of duplicates will
+     * depend on how long the runner let his runner unit be on the EKT-device).
+     *
+     * So we will remove duplicates of last control, since only the first punch matter
+     */
     const { code: finishCode } = codes[codes.length - 1];
     const indexOfFirstPunchOfLastControl = codes.findIndex(
       ({ code }) => code === finishCode,
@@ -134,6 +150,10 @@ export const ringBufferReadLength = (
   return endOfBuffer + readStop;
 };
 
+/**
+ * Returns an `Uint8Array` with the bytes from the ringbuffer that corresponds
+ * to the given offset and length.
+ */
 export const getRangeFromRingBuffer = (
   ringBuffer: Uint8Array,
   offset: number,
