@@ -13,16 +13,16 @@ Data is sent as serial data over USB.
   <dd>Status. Will make the MTR send a status-message (see <a href="#status-message">status message</a> for protocol description)</dd>
 
   <dt><code>/SA</code></dt>
-  <dd>Spool all data in MTR2. No Polling will be done! This will send messages of type <a href="#message-description">MTR message</a> until all stored e-card readings are sent.</dd>
+  <dd>Spool all data in MTR device. No polling will be done while this happen. This will send messages of type <a href="#message-description">MTR message</a> until all stored e-card readings are sent.</dd>
 
   <dt><code>/SBxxxx</code></dt>
-  <dd>Spool Binary. Spool all data from package# xxxx (LSB) and to on (data will be sent as <a href="#message-description">MTR messages</a>). You will need to perform a <code>/ST</code> to get valid to package#-s (<code>xxxx</code>) to use.</dd>
+  <dd>Spool Binary. Spool all data from package identifier/number <code>xxxx</code> (LSB) and to last read message (data will be sent as <a href="#message-description">MTR messages</a>). You will need to perform a <code>/ST</code> to get valid package identifiers/numbers (<code>xxxx</code>) to use.</dd>
 
   <dt><code>/NS</code></dt>
   <dd>New session</dd>
 
   <dt><code>/GBxxxx</code></dt>
-  <dd>Get message binary. Will send a single data-message from history in the format of a <a href="#message-description">MTR message</a>. The MTR will continue "polling" for e-cards during data sending, with short dealy for receipt. Least significant byte first. Use <code>/ST</code> to find the <code>xxxx</code> you are looking for.</dd>
+  <dd>Get message binary. Will send a single data-message from history in the format of an <a href="#message-description">MTR message</a>. The MTR will continue "polling" for e-cards during data sending, with short delay for receipt. Least significant byte first. Use <code>/ST</code> to find the <code>xxxx</code> you are looking for.</dd>
 
   <dt><code>/SCymdhms</code></dt>
   <dd>Set clock. The 6 bytes are binary values for current time:
