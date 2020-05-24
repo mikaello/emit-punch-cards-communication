@@ -30,6 +30,8 @@ export const connect250 = async () => {
         ],*/
     });
 
+    console.log("250 port acquired", port250);
+
     await port250.open(<SerialOptions>serialOptions250);
     toggleHtmlElementsWithId(["connect-device-250", "disconnect-device-250"]);
 
@@ -53,7 +55,7 @@ export const connect250 = async () => {
 
     reader250.releaseLock();
   } catch (e) {
-    console.error("serial", e);
+    console.error("250 serial", e);
     // Permission to access a device was denied implicitly or explicitly by the user.
   }
 };
@@ -92,7 +94,7 @@ export const connectMtr4 = async () => {
         ],*/
     });
 
-    console.log(portMtr4);
+    console.log("MTR4 port acquired", portMtr4);
 
     await portMtr4.open(<SerialOptions>serialOptionsMtr4);
     toggleHtmlElementsWithId(["connect-device-mtr4", "disconnect-device-mtr4"]);
@@ -125,7 +127,7 @@ export const connectMtr4 = async () => {
 
     readerMtr4.releaseLock();
   } catch (e) {
-    console.error("serial", e);
+    console.error("MTR4 serial", e);
     // Permission to access a device was denied implicitly or explicitly by the user.
   }
 };
@@ -175,7 +177,7 @@ const appendCardToList = (ecard: Ecard250 | EcardMtr) => {
 };
 
 const toggleHtmlElementsWithId = (ids: string[]) => {
-  ids.forEach(id => {
+  ids.forEach((id) => {
     const element = document.getElementById(id);
     if (element.style.display === "none") {
       element.style.display = "initial";

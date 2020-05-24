@@ -176,18 +176,18 @@ export class EmitEkt250TransformStream extends TransformStream<
   /**
    * @param {boolean} sendMetadataWhenRead If true, objects containing only
    * ecard metadata will be sent as soon possible. With a duplicate sent right
-   * after, containing same information plus control codes. Defaults to `true`.
+   * after, containing same information plus control codes. Defaults to `false`.
    */
-  constructor(sendMetadataWhenRead: boolean = true) {
+  constructor(sendMetadataWhenRead: boolean = false) {
     const unpacker = new EmitEKT250Unpacker(sendMetadataWhenRead);
 
     super({
       start(controller) {
-        unpacker.onChunk = chunk => controller.enqueue(chunk);
+        unpacker.onChunk = (chunk) => controller.enqueue(chunk);
       },
       transform(uint8Array) {
         const od = 255 - 32; // neccessary to XOR with this, see OdTransformStream
-        unpacker.addBinaryData(uint8Array.map(byte => byte ^ od));
+        unpacker.addBinaryData(uint8Array.map((byte) => byte ^ od));
       },
     });
   }
@@ -203,7 +203,7 @@ export class OdTransformStream extends TransformStream<Uint8Array> {
     const od = 255 - 32;
     super({
       transform(chunk, controller) {
-        controller.enqueue(chunk.map(byte => byte ^ od));
+        controller.enqueue(chunk.map((byte) => byte ^ od));
       },
     });
   }

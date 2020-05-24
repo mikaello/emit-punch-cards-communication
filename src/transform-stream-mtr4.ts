@@ -249,7 +249,7 @@ export class Mtr4TransformStream extends TransformStream<
 
     super({
       start(controller) {
-        unpacker.onChunk = chunk => controller.enqueue(chunk);
+        unpacker.onChunk = (chunk) => controller.enqueue(chunk);
       },
       transform(uint8Array) {
         unpacker.addBinaryData(uint8Array);

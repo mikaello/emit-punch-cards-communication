@@ -17,8 +17,10 @@ vil potensielt også kunne fungere som en backup, og ikke minst vil dette kunne
 fungere som en utlesningsmekanisme i seg selv (man kunne hatt ePost-enheten
 liggende ved siden av datamaskinen, ingen kabler!).
 
-Ressurser:
+**Ressurser:**
 
-* Reverse engineering with SDR: https://www.youtube.com/watch?v=hT_tu1CzJv4
-* Software Defined Radio with HackRF: https://greatscottgadgets.com/sdr/
-* Radio Hacking: Reverse Engineering Protocols: https://www.youtube.com/watch?v=eVqIe3na_Zk
+- Reverse engineering with SDR: https://www.youtube.com/watch?v=hT_tu1CzJv4
+- Software Defined Radio with HackRF: https://greatscottgadgets.com/sdr/
+- Radio Hacking: Reverse Engineering Protocols:
+  https://www.youtube.com/watch?v=eVqIe3na_Zk
+- https://www.rtl-sdr.com/tag/reverse-engineering/
