@@ -76,9 +76,9 @@ export const disconnect250 = async () => {
   } else {
     console.error(
       "something is not defined when disconnecting 250 (reader/inputDone/port)",
-      readerMtr4,
-      inputDoneMtr4,
-      portMtr4,
+      reader250,
+      inputDone250,
+      port250,
     );
   }
 };
