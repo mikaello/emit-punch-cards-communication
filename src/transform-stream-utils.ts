@@ -102,6 +102,36 @@ export const checkForNewReadPosition = (
   return preambleCount < preambleLength ? null : preambleStart;
 };
 
+/** Start of reading, RTX byte */
+export const USB_START_READ_BYTE = 0x02;
+
+/** End of reading, ETX byte */
+export const USB_STOP_READ_BYTE = 0x03;
+
+/**
+ * Get ringbuffer index for given byte in new byte data.
+ *
+ * @param ringBufferSize current ringbuffer size
+ * @param writePositionNewBytes write position before new bytes are added
+ * @param newBytes bytes to be added to ringbuffer
+ * @param byte which byte to check existence for in new data
+ * @return ringbuffer index of new read or write position if found, else return `null`
+ */
+export const getByteIndexInNewRingbufferData = (
+  ringBufferSize: number,
+  writePositionNewBytes: number,
+  newBytes: Uint8Array,
+  byte: number,
+): null | number => {
+  const maybeNewBytePos = newBytes.findIndex((newByte) => newByte === byte);
+
+  if (maybeNewBytePos == -1) {
+    return null;
+  }
+
+  return (writePositionNewBytes + maybeNewBytePos + 1) % ringBufferSize;
+};
+
 /**
  * Adds data to an existing ring buffer (changes the provided ring buffer,
  * side effect!). Returns the new offset.

@@ -38,7 +38,7 @@ const ecardLength = 217;
 class EmitEKT250Unpacker {
   /** Ringbuffer */
   data: Uint8Array;
-  /** Current e-card og status message will start from this position */
+  /** Current e-card and status message will start from this position */
   readPosition: number;
   /** New data will be written to this position */
   writePosition: number;

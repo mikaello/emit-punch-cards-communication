@@ -10,9 +10,7 @@ const tsProjectLib = ts.createProject("../tsconfig.json", {
 const LIB_SOURCE = "../src/**/*.ts";
 
 const transpileLibTypescript = () =>
-  src(LIB_SOURCE)
-    .pipe(tsProjectLib())
-    .pipe(dest("../dist"));
+  src(LIB_SOURCE).pipe(tsProjectLib()).pipe(dest("../dist"));
 
 const buildExample = (done: () => void) =>
   rollup
@@ -20,7 +18,7 @@ const buildExample = (done: () => void) =>
       input: "./helper.ts",
       plugins: [resolve(), typescript()],
     })
-    .then(bundle =>
+    .then((bundle) =>
       bundle.write({
         dir: "dist",
         format: "esm",

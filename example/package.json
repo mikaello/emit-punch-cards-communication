@@ -5,6 +5,7 @@
   "main": "helper.ts",
   "type": "module",
   "scripts": {
+    "clean": "rm -rf dist/",
     "build": "gulp prestart",
     "prestart": "yarn build",
     "startBackup": "serve dist",
@@ -31,15 +32,16 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@types/node": "^13.9.0",
+    "@types/w3c-web-usb": "^1.0.4",
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
-    "rollup": "^2.0.6",
-    "rollup-plugin-typescript2": "^0.26.0",
+    "rollup": "^2.23.0",
+    "rollup-plugin-typescript2": "^0.27.1",
     "serve": "^11.3.0",
     "servor": "^3.2.0",
     "ts-node": "^8.6.2",
     "tslib": "^1.11.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "@mikaello/emit-punch-cards-communication": "link:./../"

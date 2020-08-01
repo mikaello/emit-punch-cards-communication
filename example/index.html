@@ -15,6 +15,9 @@
     <button id="connect-device-mtr4" onclick="connectMtr4()">
       Connect to MTR4
     </button>
+    <button id="connect-device-escan" onclick="connectEscan()">
+      Connect to eScan
+    </button>
     <button
       id="disconnect-device-250"
       onclick="disconnect250()"
@@ -29,7 +32,14 @@
     >
       Disconnect from MTR4
     </button>
-    <h3>Sist leste EMIT-brikker:</h3>
+    <button
+      id="disconnect-device-escan"
+      onclick="disconnectEscan()"
+      style="display: none;"
+    >
+      Disconnect from eScan
+    </button>
+    <h3>Last read EMIT punch cards:</h3>
     <table>
       <thead>
         <tr>
@@ -41,5 +51,8 @@
       <tbody id="emit-card-list-body"></tbody>
     </table>
     <p id="last-read-device"></p>
+
+    <h3>Last eScan status message</h3>
+    <p id="last-escan-status"></p>
   </body>
 </html>

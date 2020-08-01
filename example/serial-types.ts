@@ -51,8 +51,10 @@ declare global {
   interface Window {
     connect250: () => void;
     connectMtr4: () => void;
+    connectEscan: () => void;
     disconnect250: () => void;
     disconnectMtr4: () => void;
+    disconnectEscan: () => void;
   }
 
   export const ParityType: {

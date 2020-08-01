@@ -4,7 +4,10 @@ import {
   ringBufferReadLength,
   addToRingBuffer,
   getRangeFromRingBuffer,
+  getByteIndexInNewRingbufferData,
+  USB_START_READ_BYTE,
 } from "../src/transform-stream-utils";
+import { createUSBCommand, USBCommand } from "../src/escan-commands";
 
 describe.skip("getControlCodeInformation", () => {
   // TODO: write this test
@@ -75,5 +78,42 @@ describe("getRangeFromRingBuffer", () => {
   });
   test("get nothing", () => {
     expect(getRangeFromRingBuffer(buffer, 6, 0).toString()).toHaveLength(0);
+  });
+});
+
+describe("createUSBCommand", () => {
+  const greenCommandBytes = [47, 71, 82, 69, 69, 78, 13, 10];
+
+  test("returns correct for /GREEN command", () => {
+    expect(createUSBCommand(USBCommand.GREEN).toString()).toEqual(
+      greenCommandBytes.join(","),
+    );
+  });
+});
+
+describe("getByteIndexInNewRingbufferData", () => {
+  const buffer = new Uint8Array([1, 3, 4, 5, 6, 7, 8, 9, 10]);
+  test("returns null when byte is not", () => {
+    const newBuffer = new Uint8Array([11, 12, 13]);
+    expect(
+      getByteIndexInNewRingbufferData(
+        buffer.byteLength,
+        buffer.byteLength - 2,
+        newBuffer,
+        USB_START_READ_BYTE,
+      ),
+    ).toBeNull();
+  });
+
+  test("returns correct position", () => {
+    const newBuffer = new Uint8Array([0, 7, 9, 8, 7, USB_START_READ_BYTE]);
+    expect(
+      getByteIndexInNewRingbufferData(
+        buffer.byteLength,
+        buffer.byteLength - 2,
+        newBuffer,
+        USB_START_READ_BYTE,
+      ),
+    ).toEqual(4);
   });
 });

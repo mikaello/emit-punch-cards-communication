@@ -9,6 +9,11 @@ import {
   Mtr4TransformStream,
   serialOptionsMtr4,
 } from "./transform-stream-mtr4";
+import {
+  UsbFrame,
+  EmitEscanUnpacker,
+  EmitEscanTransformStream,
+} from "./transform-stream-escan";
 import { BatterStatus, PackageType } from "./transform-stream-utils";
 
 export {
@@ -21,4 +26,7 @@ export {
   Mtr4TransformStream,
   PackageType,
   BatterStatus,
+  UsbFrame,
+  EmitEscanUnpacker,
+  EmitEscanTransformStream,
 };
