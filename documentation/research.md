@@ -17,6 +17,8 @@ Chrome device log: chrome://device-log/
   https://github.com/kimio-kosaka/WebSerial-microbit/blob/master/script.js
 - Serial API explainer:
   https://github.com/WICG/serial/blob/gh-pages/EXPLAINER.md
+- Serial API overview: https://web.dev/serial/
+- Stackoverflow: [WebUSB vs SerialAPI](https://stackoverflow.com/questions/63327407/webusb-api-vs-serial-api>
 
 ## Transforms
 
