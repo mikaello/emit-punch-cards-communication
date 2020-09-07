@@ -18,7 +18,7 @@ Chrome device log: chrome://device-log/
 - Serial API explainer:
   https://github.com/WICG/serial/blob/gh-pages/EXPLAINER.md
 - Serial API overview: https://web.dev/serial/
-- Stackoverflow: [WebUSB vs SerialAPI](https://stackoverflow.com/questions/63327407/webusb-api-vs-serial-api>
+- Stackoverflow: [WebUSB vs SerialAPI](https://stackoverflow.com/questions/63327407/webusb-api-vs-serial-api) 
 
 ## Transforms
 
