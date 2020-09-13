@@ -78,7 +78,7 @@ describe("getRangeFromRingBuffer", () => {
   test("getting from near end", () => {
     expect(getRangeFromRingBuffer(buffer, 6, 4).toString()).toEqual("7,8,1,2");
   });
-  test("get nothing", () => {
+  test("getting nothing should return nothing", () => {
     expect(getRangeFromRingBuffer(buffer, 6, 0).toString()).toHaveLength(0);
   });
 });
@@ -86,7 +86,7 @@ describe("getRangeFromRingBuffer", () => {
 describe("createUSBCommand", () => {
   const greenCommandBytes = [47, 71, 82, 69, 69, 78, 13, 10];
 
-  test("returns correct for /GREEN command", () => {
+  test("returns correct bytes for /GREEN command", () => {
     expect(createUSBCommand(USBCommand.GREEN).toString()).toEqual(
       greenCommandBytes.join(","),
     );
@@ -95,19 +95,19 @@ describe("createUSBCommand", () => {
 
 describe("getByteIndexInNewRingbufferData", () => {
   const buffer = new Uint8Array([1, 3, 4, 5, 6, 7, 8, 9, 10]);
-  test("returns null when byte is not", () => {
+  test("returns null when interesting byte is not present", () => {
     const newBuffer = new Uint8Array([11, 12, 13]);
     expect(
       getByteIndexInNewRingbufferData(
         buffer.byteLength,
         buffer.byteLength - 2,
         newBuffer,
-        USB_START_READ_BYTE,
+        USB_START_READ_BYTE, // is not present
       ),
     ).toBeNull();
   });
 
-  test("returns correct position", () => {
+  test("returns correct position of interesting byte", () => {
     const newBuffer = new Uint8Array([0, 7, 9, 8, 7, USB_START_READ_BYTE]);
     expect(
       getByteIndexInNewRingbufferData(

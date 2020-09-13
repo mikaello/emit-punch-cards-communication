@@ -7,27 +7,74 @@ import {
   USB_STOP_READ_BYTE,
 } from "./transform-stream-utils";
 
+/**
+ * The status frame is sent every 4s from the ECU/eScan. This frame is not sent
+ * when using protocol 1.
+ */
 export type UsbFrame = {
   productName: "eScan" | "ECU";
   hardwareVersion: string;
   softwareVersion: string;
   version: string;
-  eScanMessageType?: "S"; // eScan only
-  elineCode: string; // from 0 to 255 (254 on ECU)
+  /** eScan only */
+  eScanMessageType?: "S";
+  /** from 0 to 255 (254 on ECU) */
+  elineCode: string;
   tagProtocol: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
   serialNumber: string;
-  eScanBatteryVoltageMillivolt?: string; // eScan only
-  eScanUsbVoltageMillivolt?: string; // eScan only
-  eScanBatteryPercentage?: string; // eScan only
-  eScanISODate: string; // eScan only, ISO date
-  timeMilliseconds: string; // milliseconds since EPOCH
-  statusMessageAndEvent: string; // eScan only
-  ecuFirstMessageNumberToday: number; // ECU only
-  ecuTotalMessagesToday: number; // ECU only
+  /** eScan only */
+  eScanBatteryVoltageMillivolt?: string;
+  /** eScan only */
+  eScanUsbVoltageMillivolt?: string;
+  /** eScan only */
+  eScanBatteryPercentage?: string;
+  /** eScan only, ISO date */
+  eScanISODate: string;
+  /** Milliseconds since EPOCH */
+  timeMilliseconds: string;
+  /** eScan only */
+  statusMessageAndEvent: string;
+  /** ECU only */
+  ecuFirstMessageNumberToday: number;
+  /** ECU only */
+  ecuTotalMessagesToday: number;
 };
 
-// TODO: fill this with properties
-export type DumpTagFrame = {};
+/**
+ * The frame is sent each time a tag is passed near the ECU/eScan with the
+ * control code:
+ * * 240..243 (meaning: dump last 5 days)
+ * * 244 (meaning: dump last 500 passages)
+ * * 250..253 (meaning: dump last race)
+ */
+export type DumpTagFrame = {
+  productName: "eScan" | "ECU";
+  /**
+   * ECU only. Quality link indicator. Should be between -5 and +5. If above
+   * the quality level is really bad. */
+  radioLinkQuality?: string;
+  /**
+   * ECU only. Reception level or RSSI. Should be between +/- 30, Under -10
+   * the reception level is weak. Subtract 74 to get the real RSSI level in
+   * dBm. So -30 is -104dBm.
+   *
+   * Shown if DM=’E’ and protocol format different than 1.
+   * */
+  radioLinkReception?: string;
+  /** Can be defined with ECU and /EMITAGCNRS command */
+  customTagNumber: string;
+  /** eScan only */
+  eScanSerialNumber?: string;
+  /** Current time on device in format hh:mm:ss:msec when message is sent to computer */
+  currentDeviceTime?: string;
+  /** Large diff on eScan vs ECU */
+  internalPowerInfo?: string;
+  tagSerialNumber?: string;
+  /** Can be defined with ECU and /EMITAGTS command */
+  customTagText: string;
+  tagFirmwareVersion: string;
+  tagProtocol: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
+};
 
 /**
  * This class unpacks Uint8Arrays and sends frames and time objects when gained enough data.
