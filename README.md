@@ -28,6 +28,7 @@ especially [helper.ts](./example/helper.ts).
 
 ## Status
 
+- :x: eScan2 device
 - :white_check_mark: eScan device
 - :white_check_mark: 250 device
 - :white_check_mark: MTR4 device
