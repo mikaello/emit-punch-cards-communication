@@ -10,9 +10,11 @@ import {
 import { createUSBCommand, USBCommand } from "../src/escan-commands";
 
 describe.skip("getControlCodeInformation", () => {
-  // TODO: write this test
-  const dv = new DataView(new Uint8Array(0).buffer);
-  expect(getControlCodeInformation(dv)).toBeFalsy();
+  test("control code information", () => {
+    // TODO: write this test
+    const dv = new DataView(new Uint8Array(0).buffer);
+    expect(getControlCodeInformation(dv)).toBeFalsy();
+  });
 });
 
 describe("checkForNewReadPosition", () => {

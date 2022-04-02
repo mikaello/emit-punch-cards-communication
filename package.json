@@ -37,9 +37,9 @@
   "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^26.0.8",
-    "jest": "^26.2.2",
-    "ts-jest": "^26.1.4",
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
     "typescript": "^3.9.7",
     "web-streams-polyfill": "^2.1.0"
   }
