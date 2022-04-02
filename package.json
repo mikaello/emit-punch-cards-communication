@@ -41,6 +41,6 @@
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
     "typescript": "^3.9.7",
-    "web-streams-polyfill": "^2.1.0"
+    "web-streams-polyfill": "^3.2.0"
   }
 }
