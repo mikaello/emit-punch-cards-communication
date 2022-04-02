@@ -7,8 +7,10 @@ yarn install
 yarn start
 ```
 
-You can now open [http://localhost:8090](http://localhost:8090) and start
-testing your local 250 or MTR4 device.
+You can now open [http://localhost:8080](http://localhost:8080) and start
+testing your local 250 or MTR4 device (if using cURL, you will need to add the
+`--compressed` arg, because [servor](https://github.com/lukejacksonn/servor)
+serves gzipped since v3.3.1).
 
 To continuously watch files for changes, you need to start Gulp (in another
 tab):

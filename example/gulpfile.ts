@@ -2,7 +2,7 @@ const { src, dest, series, watch, task } = require("gulp");
 const ts = require("gulp-typescript");
 const rollup = require("rollup");
 const typescript = require("rollup-plugin-typescript2");
-const resolve = require("@rollup/plugin-node-resolve");
+const { nodeResolve } = require("@rollup/plugin-node-resolve");
 
 const tsProjectLib = ts.createProject("../tsconfig.json", {
   rootDir: "../",
@@ -16,7 +16,7 @@ const buildExample = (done: () => void) =>
   rollup
     .rollup({
       input: "./helper.ts",
-      plugins: [resolve(), typescript()],
+      plugins: [nodeResolve(), typescript()],
     })
     .then((bundle) =>
       bundle.write({

@@ -1,5 +1,5 @@
 import typescript from "rollup-plugin-typescript2";
-import resolve from "@rollup/plugin-node-resolve";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 
 export default {
   input: "./helper.ts",
@@ -8,5 +8,5 @@ export default {
     format: "esm",
     sourcemap: true,
   },
-  plugins: [resolve(), typescript()],
+  plugins: [nodeResolve(), typescript()],
 };

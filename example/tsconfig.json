@@ -15,5 +15,10 @@
     "rootDir": "..",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
+  },
+  "ts-node": {
+    "moduleTypes": {
+      "gulpfile.ts": "cjs"
+    }
   }
 }
