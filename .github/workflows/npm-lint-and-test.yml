@@ -17,3 +17,17 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm run test
+
+  build-example:
+    runs-on: ubuntu-latest
+    name: build-lint-test example
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bahmutov/npm-install@v1 # For improved caching of NPM/Yarn
+        with:
+          working-directory: example
+      - run: yarn --frozen-lockfile
+        working-directory: example
+      - run: npm run build
+        working-directory: example
