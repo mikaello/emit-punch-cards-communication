@@ -93,9 +93,10 @@ export class EmitEscanUnpacker {
     const decoder = new TextDecoder("ascii");
     const frameText = decoder.decode(frameData.buffer);
 
-    const iMatch = /I(?<productName>\w+?)-HW(?<hwVersion>.+?)-SW(?<swVersion>.+?)-V(?<version>.+?)\s/gm.exec(
-      frameText,
-    );
+    const iMatch =
+      /I(?<productName>\w+?)-HW(?<hwVersion>.+?)-SW(?<swVersion>.+?)-V(?<version>.+?)\s/gm.exec(
+        frameText,
+      );
     const bMatch = /\tB(?<messageType>\w{1})\t/gm.exec(frameText);
     const cMatch = /\tC(?<elineCode>[0-9]{1,3})\t/gm.exec(frameText);
     const xMatch = /\tX(?<protocol>[0-9])\t/gm.exec(frameText);
@@ -104,9 +105,8 @@ export class EmitEscanUnpacker {
     const uMatch = /\tU(?<date>[0-9]{2}[.][0-9]{2}[.][0-9]{4})\t/gm.exec(
       frameText,
     );
-    const wMatch = /\tW(?<time>[0-9]{2}[:][0-9]{2}[:][0-9]{2}[.][0-9]{3})/gm.exec(
-      frameText,
-    );
+    const wMatch =
+      /\tW(?<time>[0-9]{2}[:][0-9]{2}[:][0-9]{2}[.][0-9]{3})/gm.exec(frameText);
 
     const i = iMatch?.groups;
     return {
