@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf dist/",
     "build": "gulp prestart",
-    "prestart": "yarn build",
+    "prestart": "build",
     "startBackup": "serve dist",
     "start": "servor dist index.html 8080 --reload",
     "dev": "gulp",
