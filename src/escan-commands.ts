@@ -180,7 +180,6 @@ again.
  * @param payload some commands require a payload
  * @returns command with proper encoding
  */
-
 export const createUSBCommand = (
   command: USBCommand,
   payload: string = "",

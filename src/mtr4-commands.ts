@@ -3,6 +3,7 @@ import { int32ToBytes } from "./byteHandlingUtils.js";
 /**
  * `/ST`, Status. Will make the MTR send a status-message (see status message for
  * protocol description)
+ * @see MtrStatusMessage
  */
 export const getStatusCommand = () => {
   return new Uint8Array([47, 83, 84]); // /ST
@@ -11,6 +12,7 @@ export const getStatusCommand = () => {
 /**
  * `/SA`. Spool all data in MTR2. No Polling will be done! This will send messages of
  *  type MTR message until all stored e-card readings are sent.
+ * @see EcardMtr
  */
 export const getSpoolAllCommand = () => {
   return new Uint8Array([47, 83, 65]); // /SA
@@ -42,6 +44,7 @@ export const getNewSessionCommand = () => {
  * in the format of a MTR message. The MTR will continue "polling" for e-cards
  * during data sending, with short dealy for receipt. Least significant byte
  * first. Use {@link getStatusCommand}  to find the xxxx you are looking for.
+ * @see EcardMtr
  */
 export const getMessageBinaryCommand = (packageNumber: number) => {
   let gb = new Uint8Array([47, 71, 66]); // /GB

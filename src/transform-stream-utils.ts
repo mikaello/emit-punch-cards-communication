@@ -1,4 +1,4 @@
-export enum BatterStatus {
+export enum BatteryStatus {
   OK = 0,
   Low = 1,
 }

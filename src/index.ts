@@ -14,7 +14,7 @@ import {
   EmitEscanUnpacker,
   EmitEscanTransformStream,
 } from "./transform-stream-escan";
-import { BatterStatus, PackageType } from "./transform-stream-utils";
+import { BatteryStatus, PackageType } from "./transform-stream-utils";
 
 export {
   serialOptions250,
@@ -25,7 +25,7 @@ export {
   EmitEkt250TransformStream,
   Mtr4TransformStream,
   PackageType,
-  BatterStatus,
+  BatteryStatus,
   UsbFrame,
   EmitEscanUnpacker,
   EmitEscanTransformStream,

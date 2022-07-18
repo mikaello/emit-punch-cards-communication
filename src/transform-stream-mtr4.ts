@@ -7,7 +7,7 @@ import {
   getRangeFromRingBuffer,
   getMessageType,
   PackageType,
-  BatterStatus,
+  BatteryStatus,
 } from "./transform-stream-utils";
 
 export const serialOptionsMtr4 = {
@@ -22,7 +22,7 @@ export type EcardMtr = {
   packageType: PackageType.EcardMtr;
   mtrId: number;
   timestamp: Date;
-  batteryStatus: BatterStatus;
+  batteryStatus: BatteryStatus;
   packageNumber: number;
   ecardNumber: number;
   ecardProductionWeek: number;
@@ -38,7 +38,7 @@ export type MtrStatusMessage = {
   packageType: PackageType.StatusMessage;
   mtrId: number;
   currentTime: Date;
-  batteryStatus: BatterStatus;
+  batteryStatus: BatteryStatus;
   recentPackage: number;
   oldestPackage: number;
   currentSessionStart: number;
@@ -119,7 +119,7 @@ class Mtr4Unpacker {
     }
 
     const batteryStatus =
-      ecardData[16] === 0 ? BatterStatus.OK : BatterStatus.Low;
+      ecardData[16] === 0 ? BatteryStatus.OK : BatteryStatus.Low;
 
     return {
       packageSize: ecardData[4],
@@ -157,7 +157,7 @@ class Mtr4Unpacker {
     }
 
     const batteryStatus =
-      statusMessage[16] === 0 ? BatterStatus.OK : BatterStatus.Low;
+      statusMessage[16] === 0 ? BatteryStatus.OK : BatteryStatus.Low;
 
     return {
       packageSize: statusMessage[4],
