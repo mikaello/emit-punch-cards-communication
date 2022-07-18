@@ -1,7 +1,17 @@
-Last login: Sat Mar 28 18:05:51 on ttys001
-Scanning of invironment with [RTL 820T2 SDR Dongle](https://www.hamgoodies.co.uk/rtl-sdr-dongle), Sat Mar 28, with [gr-scan](http://www.techmeology.co.uk/gr-scan/) (obs. two different scans, scroll down):
+= Raw output of radio scanning of ePost
 
-```
+Last login: Sat Mar 28 18:05:51 on ttys001
+
+Scanning of environment with https://www.hamgoodies.co.uk/rtl-sdr-dongle[RTL 820T2 SDR Dongle],
+with an ePost and an EMIT punch card placed right by, Sat Mar 28, with
+http://www.techmeology.co.uk/gr-scan/[gr-scan] (obs. two different scans, scroll down):
+
+.Scan number 1
+[%collapsible]
+====
+
+[source,]
+----
 ✔ ~/Downloads/gr-scan [master|…1] 
 20:22 $ /gr-scan -x 282 -y 440 -p 15
 -bash: /gr-scan: No such file or directory
@@ -4824,6 +4834,15 @@ gr::buffer::allocate_buffer: warning: tried to allocate
 01:19:15: Finished scanning 439.000000 MHz - 441.000000 MHz
 [*] Finished scanning
 ^C
+----
+====
+
+.Scan number 1
+[%collapsible]
+====
+
+[source,]
+----
 ✘-INT ~/Downloads/gr-scan [master|…1] 
 22:18 $ ./gr-scan -x 400 -y 1000 -p 40
 gr-osmosdr 0.1.4 (0.1.4) gnuradio 3.7.13.4
@@ -53189,5 +53208,6 @@ gr::buffer::allocate_buffer: warning: tried to allocate
 13:20:36: Finished scanning 999.000000 MHz - 1001.000000 MHz
 13:20:37: Finished scanning 999.000000 MHz - 1001.000000 MHz
 [*] Finished scanning
-```
+----
    4 items of size 16000. Due to alignment requirements
+====
