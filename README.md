@@ -5,13 +5,14 @@ implemented wih TypeScript and based on
 [streams](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API). To
 communicate with the 250 and MTR4 device, the
 [Serial API](https://wicg.github.io/serial/) (see also
-[Serial API on Github](https://github.com/WICG/serial)) is used.
+[Serial API on Github](https://github.com/WICG/serial) or
+[MDN](https://developer.mozilla.org/en-US/docs/Web/API/Serial)) is used, while
+for the eScan device
+[WebUSB API](https://developer.mozilla.org/en-US/docs/Web/API/WebUSB_API) was
+needed.
 
-NB: The Serial API currently only works in Chrome. To start using this library
-you need to either
-[start a trial](https://developers.chrome.com/origintrials/#/register_trial/2992641952387694593)
-for the Serial API, or enable _Experimental Web Platform features_ in
-[chrome://flags](chrome://flags).
+NB: The Serial API currently only works in Chrome and Edge, while WebUSB API
+does also work on Chrome for Android.
 
 ## Install
 
