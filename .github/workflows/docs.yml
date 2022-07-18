@@ -1,0 +1,26 @@
+name: Gen documentation
+
+on:
+  push:
+    branches: [main]
+    paths: ["**.ts", ".github/workflows/docs.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["**.ts", ".github/workflows/docs.yml"]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build documentation with TypeDoc
+        run: >
+          npx typedoc --readme none --disableSources --includeVersion --exclude
+          "src/mockdata/*" --plugin none --out public src
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
