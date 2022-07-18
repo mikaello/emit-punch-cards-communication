@@ -9,7 +9,7 @@
     "clean": "rm -rf dist/",
     "build": "tsc -b",
     "prepublishOnly": "yarn build",
-    "lint": "prettier --check \"**/(*.json|*.css|*.html|*.md|*.yml)\" src/*.ts __tests__/*.ts",
+    "lint": "prettier --check \"**/(*.json|*.css|*.html|*.md|*.yml)\" \"(src|__tests__|example|.)/*.(ts(x)?|js)\"",
     "test": "jest"
   },
   "repository": {
