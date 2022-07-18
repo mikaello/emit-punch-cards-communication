@@ -1,0 +1,19 @@
+name: NPM lint and test
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: build-lint-test
+
+    steps:
+      - uses: actions/checkout@v3
+      #- uses: actions/setup-node@v3
+      #  with:
+      #    node-version: 16
+      - uses: bahmutov/npm-install@v1 # For improved caching of NPM/Yarn
+      - run: yarn --frozen-lockfile
+      - run: npm run build
+      - run: npm run lint
+      - run: npm run test
