@@ -74,3 +74,7 @@ declare global {
     };
   }
 }
+
+interface EventHandlerNonNull {
+  (event: Event): any;
+}
