@@ -1,5 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "schedule": ["before 3am on Monday"]
+  "extends": [
+    "config:base",
+    "npm:unpublishSafe"
+  ],
+  "schedule": [ "before 3am on Monday" ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "platformAutomerge": true
+    }
+  ]
 }
