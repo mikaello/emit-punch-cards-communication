@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "14.1.0",
+    "@rollup/plugin-node-resolve": "15.0.1",
     "@types/node": "18.11.9",
     "@types/w3c-web-usb": "1.0.6",
     "gulp": "4.0.2",
