@@ -19,7 +19,7 @@ export interface SerialOptions {
     | 50;
   stopbits?: 1 | 2;
   databits?: 8 | 7 | 6 | 5;
-  parity?: typeof ParityType[keyof typeof ParityType];
+  parity?: (typeof ParityType)[keyof typeof ParityType];
   buffersize?: number;
   rtscts?: boolean;
   xon?: boolean;
