@@ -14,11 +14,11 @@
     "baseUrl": "./",
     "rootDir": "..",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
   },
   "ts-node": {
     "moduleTypes": {
-      "gulpfile.ts": "cjs"
-    }
-  }
+      "gulpfile.ts": "cjs",
+    },
+  },
 }
