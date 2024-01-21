@@ -11,13 +11,16 @@ on:
 jobs:
   docs:
     runs-on: ubuntu-latest
+    env:
+      # renovate: datasource=npm depName=typedoc
+      typedoc_version: 0.25.6
     steps:
       - uses: actions/checkout@v3
 
       - name: Build documentation with TypeDoc
         run: >
-          npx typedoc --readme none --disableSources --includeVersion --exclude
-          "src/mockdata/*" --plugin none --out public src
+          npx typedoc@$typedoc_version --readme none --disableSources
+          --includeVersion --exclude "src/mockdata/*" --out public src
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
