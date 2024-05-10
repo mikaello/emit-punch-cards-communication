@@ -31,6 +31,7 @@ especially [helper.ts](./example/helper.ts).
 
 - :x: eScan2 device
 - :white_check_mark: eScan device
+- :x: ECU1
 - :white_check_mark: 250 device
 - :white_check_mark: MTR4 device
 - :x: ePost
