@@ -27,6 +27,15 @@ export interface SerialOptions {
   xany?: boolean;
 }
 
+interface SerialPortRequestOptions {
+  filters: SerialPortFilter[];
+}
+
+interface SerialPortFilter {
+  usbVendorId: number;
+  usbProductId?: number | undefined;
+}
+
 interface SerialPortInfo {
   readonly serialNumber: string;
   readonly manufacturer: string;
@@ -69,7 +78,7 @@ declare global {
     serial: {
       onconnect: EventHandlerNonNull;
       ondisconnect: EventHandlerNonNull;
-      requestPort(options: SerialOptions): Promise<SerialPort>;
+      requestPort(options: SerialPortRequestOptions): Promise<SerialPort>;
       getPorts(): Promise<Iterable<SerialPort>>;
     };
   }
