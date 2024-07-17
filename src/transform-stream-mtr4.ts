@@ -11,10 +11,10 @@ import {
 } from "./transform-stream-utils";
 
 export const serialOptionsMtr4 = {
-  baudrate: 9600,
-  stopbits: 1,
+  baudRate: 9600,
+  stopBits: 1,
   parity: "none",
-  databits: 8,
+  dataBits: 8,
 };
 
 export type EcardMtr = {
