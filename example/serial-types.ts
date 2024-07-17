@@ -63,12 +63,12 @@ export interface SerialPortFilter {
  * @see https://wicg.github.io/serial/#serialport-interface
  */
 export interface SerialPort {
-  open(options: SerialOptions): Promise<void>;
-  close(): Promise<void>;
+  readonly connected: boolean;
   readonly readable: ReadableStream;
   readonly writable: WritableStream;
-  readonly in: ReadableStream;
-  readonly out: WritableStream;
+  open(options: SerialOptions): Promise<void>;
+  close(): Promise<void>;
+  forget(): Promise<void>;
   getInfo(): SerialPortInfo;
 }
 
