@@ -69,7 +69,7 @@ declare global {
     serial: {
       onconnect: EventHandlerNonNull;
       ondisconnect: EventHandlerNonNull;
-      requestPort(options: SerialPortRequestOptions): Promise<SerialPort>;
+      requestPort(options: SerialOptions): Promise<SerialPort>;
       getPorts(): Promise<Iterable<SerialPort>>;
     };
   }
