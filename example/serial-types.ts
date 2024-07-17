@@ -37,6 +37,28 @@ interface SerialPortInfo {
   readonly product: string;
 }
 
+/**
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Serial/requestPort
+ * @see https://wicg.github.io/serial/#serialportrequestoptions-dictionary
+ */
+export interface SerialPortRequestOptions {
+  filters?: SerialPortFilter[];
+}
+
+/**
+ * @see https://wicg.github.io/serial/#serialportfilter-dictionary
+ */
+export interface SerialPortFilter {
+  /** An unsigned short integer that identifies a USB device vendor. */
+  usbVendorId: number;
+  /** An unsigned short integer that identifies a USB device. */
+  usbProductId: number;
+}
+
+/**
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/SerialPort
+ * @see https://wicg.github.io/serial/#serialport-interface
+ */
 export interface SerialPort {
   open(options: SerialOptions): Promise<void>;
   close(): Promise<void>;
@@ -69,7 +91,9 @@ declare global {
     serial: {
       onconnect: EventHandlerNonNull;
       ondisconnect: EventHandlerNonNull;
-      requestPort(options: SerialOptions): Promise<SerialPort>;
+      requestPort(
+        options: SerialPortRequestOptions | undefined,
+      ): Promise<SerialPort>;
       getPorts(): Promise<Iterable<SerialPort>>;
     };
   }
