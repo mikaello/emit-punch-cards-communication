@@ -1,1 +1,1 @@
-import "web-streams-polyfill/es2018";
+import "web-streams-polyfill/polyfill";
