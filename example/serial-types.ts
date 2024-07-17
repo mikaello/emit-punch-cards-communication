@@ -1,4 +1,6 @@
+/** @see https://wicg.github.io/serial/#serialoptions-dictionary */
 export interface SerialOptions {
+  /** The baud rate at which serial communication should be established. */
   baudRate:
     | 115200
     | 57600
@@ -17,14 +19,15 @@ export interface SerialOptions {
     | 110
     | 75
     | 50;
+  /** The number of stop bits at the end of the frame. Defaults to 1. */
   stopBits?: 1 | 2;
-  dataBits?: 8 | 7 | 6 | 5;
+  /** The number of data bits per frame. Defaults to 8. */
+  dataBits?: 7 | 8;
   parity?: (typeof ParityType)[keyof typeof ParityType];
+  /** An unsigned long integer indicating the size of the read and write buffers that are to be established (must be less than 16MB). Defaults to 255. */
   bufferSize?: number;
-  rtscts?: boolean;
-  xon?: boolean;
-  xoff?: boolean;
-  xany?: boolean;
+  /** The flow control mode. */
+  flowControl?: (typeof FlowControl)[keyof typeof FlowControl];
 }
 
 interface SerialPortInfo {
@@ -49,9 +52,9 @@ export interface SerialPortRequestOptions {
  * @see https://wicg.github.io/serial/#serialportfilter-dictionary
  */
 export interface SerialPortFilter {
-  /** An unsigned short integer that identifies a USB device vendor. */
+  /** USB Vendor ID */
   usbVendorId: number;
-  /** An unsigned short integer that identifies a USB device. */
+  /** USB Product ID */
   usbProductId: number;
 }
 
@@ -80,11 +83,19 @@ declare global {
   }
 
   export const ParityType: {
+    /** No parity bit is sent for each data word. */
     NONE: "none";
+    /** Data word plus parity bit has even parity. */
     EVEN: "even";
+    /** Data word plus parity bit has odd parity. */
     ODD: "odd";
-    MARK: "mark";
-    SPACE: "space";
+  };
+
+  export const FlowControl: {
+    /** No flow control is enabled. */
+    NONE: "none";
+    /** Hardware flow control using the RTS and CTS signals is enabled. */
+    HARDWARE: "hardware";
   };
 
   interface Navigator {
