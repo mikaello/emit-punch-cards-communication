@@ -1,5 +1,5 @@
 export interface SerialOptions {
-  baudrate?:
+  baudRate:
     | 115200
     | 57600
     | 38400
@@ -17,10 +17,10 @@ export interface SerialOptions {
     | 110
     | 75
     | 50;
-  stopbits?: 1 | 2;
-  databits?: 8 | 7 | 6 | 5;
+  stopBits?: 1 | 2;
+  dataBits?: 8 | 7 | 6 | 5;
   parity?: (typeof ParityType)[keyof typeof ParityType];
-  buffersize?: number;
+  bufferSize?: number;
   rtscts?: boolean;
   xon?: boolean;
   xoff?: boolean;

@@ -36,8 +36,8 @@ export const connect250 = async () => {
     port250 = await navigator.serial.requestPort({
       /* filters: [
           {
-            vendorId: 0x0403, // FTDI
-            productId: 0x6001,
+            usbVendorId: 0x0403, // FTDI
+            usbProductId: 0x6001,
           },
         ],*/
     });

@@ -22,10 +22,10 @@ export type Ecard250 = {
 };
 
 export const serialOptions250 = {
-  baudrate: 9600,
-  stopbits: 2,
+  baudRate: 9600,
+  stopBits: 2,
   parity: "none",
-  databits: 8,
+  dataBits: 8,
 };
 
 const ecardLength = 217;
