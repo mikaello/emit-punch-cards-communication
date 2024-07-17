@@ -37,7 +37,7 @@
     "@types/w3c-web-usb": "1.0.10",
     "gulp": "4.0.2",
     "gulp-typescript": "6.0.0-alpha.1",
-    "rollup": "3.29.4",
+    "rollup": "4.18.1",
     "serve": "14.2.3",
     "servor": "4.0.2",
     "ts-node": "10.9.2",
