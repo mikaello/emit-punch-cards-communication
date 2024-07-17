@@ -8,6 +8,7 @@ Chrome device log: chrome://device-log/
   https://no.sport.orientering.narkive.com/EAXxSbGM/mtr-debug-tool
 - tTime: http://matthey.no/ttime/ (contains protocol-documentation as well as
   MTR debugging tools)
+- Hardware readout of EMIT devices: https://gist.github.com/mikaello/791af810d94a0457b9099037d0a1934e
 
 ## Serial API
 
