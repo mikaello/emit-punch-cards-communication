@@ -1,7 +1,7 @@
 const { src, dest, series, watch, task } = require("gulp");
 const ts = require("gulp-typescript");
 const rollup = require("rollup");
-const typescript = require("rollup-plugin-typescript2");
+const typescript = require("@rollup/plugin-typescript");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
 
 const tsProjectLib = ts.createProject("../tsconfig.json", {
