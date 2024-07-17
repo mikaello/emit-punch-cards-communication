@@ -34,7 +34,7 @@ const disconnectEventListener = async () => await disconnectEscan();
 export const connect250 = async () => {
   try {
     port250 = await navigator.serial.requestPort({
-       /* filters: [
+      /* filters: [
           {
             usbVendorId: 0x0403, // FTDI
             usbProductId: 0x6001,
