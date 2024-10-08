@@ -3,22 +3,25 @@ const ts = require("typescript");
 const rollup = require("rollup");
 const typescriptPlugin = require("@rollup/plugin-typescript");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
+const through2 = require("through2");
 
 const LIB_SOURCE = "../src/**/*.ts";
 const tsConfigPath = "../tsconfig.json";
 
 const transpileLibTypescript = () =>
-  src(LIB_SOURCE, { sourcemaps: true }) // initialize sourcemaps
-    .pipe(dest("../dist", { sourcemaps: "." })); // write sourcemaps to the same directory
-
-function compileTypeScript(content, file) {
-  const tsConfig = require(tsConfigPath);
-  const result = ts.transpileModule(content.toString(), {
-    compilerOptions: tsConfig.compilerOptions,
-    fileName: file.path,
-  });
-  return result.outputText;
-}
+  src(LIB_SOURCE, { sourcemaps: true })
+    .pipe(through2.obj(function (file, _, cb) {
+      if (file.isBuffer()) {
+        const tsConfig = require(tsConfigPath);
+        const result = ts.transpileModule(file.contents.toString(), {
+          compilerOptions: tsConfig.compilerOptions,
+          fileName: file.path,
+        });
+        file.contents = Buffer.from(result.outputText);
+      }
+      cb(null, file);
+    }))
+    .pipe(dest("../dist", { sourcemaps: '.' }));
 
 const buildExample = (done) =>
   rollup
