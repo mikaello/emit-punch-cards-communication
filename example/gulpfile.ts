@@ -31,7 +31,7 @@ const buildExample = (done) =>
         dir: "dist",
         format: "esm",
         sourcemap: true,
-      })
+      }),
     )
     .then(() => {
       done();
