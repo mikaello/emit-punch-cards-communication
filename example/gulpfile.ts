@@ -47,7 +47,7 @@ task("default", () => {
       "*.ts",
       "node_modules/@mikaello/emit-punch-cards-communication/dist/**/*.js",
     ],
-    buildExample
+    buildExample,
   );
 });
 
