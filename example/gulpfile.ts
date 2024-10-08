@@ -8,8 +8,8 @@ const LIB_SOURCE = "../src/**/*.ts";
 const tsConfigPath = "../tsconfig.json";
 
 const transpileLibTypescript = () =>
-  src(LIB_SOURCE, { sourcemaps: true })  // initialize sourcemaps
-    .pipe(dest("../dist", { sourcemaps: '.' }));  // write sourcemaps to the same directory
+  src(LIB_SOURCE, { sourcemaps: true }) // initialize sourcemaps
+    .pipe(dest("../dist", { sourcemaps: "." })); // write sourcemaps to the same directory
 
 function compileTypeScript(content, file) {
   const tsConfig = require(tsConfigPath);
