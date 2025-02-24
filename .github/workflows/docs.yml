@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # renovate: datasource=npm depName=typedoc
-      typedoc_version: 0.27.6
+      typedoc_version: 0.27.8
     steps:
       - uses: actions/checkout@v4
 
