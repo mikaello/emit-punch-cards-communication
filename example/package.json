@@ -32,7 +32,7 @@
   "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "15.3.1",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-typescript": "^12.0.0",
     "@types/node": "22.15.17",
     "@types/w3c-web-usb": "1.0.10",
     "gulp": "5.0.0",
