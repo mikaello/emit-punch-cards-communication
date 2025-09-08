@@ -38,7 +38,7 @@
     "gulp": "5.0.1",
     "gulp-typescript": "6.0.0-alpha.1",
     "rollup": "4.47.1",
-    "serve": "14.2.4",
+    "serve": "14.2.5",
     "servor": "4.0.2",
     "ts-node": "10.9.2",
     "tslib": "2.8.1",
