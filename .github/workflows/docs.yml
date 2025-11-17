@@ -15,7 +15,7 @@ jobs:
       # renovate: datasource=npm depName=typedoc
       typedoc_version: 0.28.14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Build documentation with TypeDoc
         run: >
