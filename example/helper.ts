@@ -11,11 +11,8 @@ import {
   UsbFrame,
 } from "@mikaello/emit-punch-cards-communication";
 import { SerialPort, SerialOptions } from "./serial-types";
-import { getStatusCommand } from "@mikaello/emit-punch-cards-communication/dist/mtr4-commands";
-import {
-  createUSBCommand,
-  USBCommand,
-} from "@mikaello/emit-punch-cards-communication/dist/escan-commands";
+import { getStatusCommand } from "../src/mtr4-commands";
+import { createUSBCommand, USBCommand } from "../src/escan-commands";
 
 let port250: SerialPort | null = null;
 let inputDone250: Promise<void> | null = null;
