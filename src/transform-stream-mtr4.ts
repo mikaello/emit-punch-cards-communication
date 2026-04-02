@@ -61,49 +61,49 @@ const ecardSize = 234;
 const statusMessageSize = 59;
 
 // Byte offsets shared by both ecard and status message frames
-const OFF_MTR_PREAMBLE_LENGTH = 4;    // four 0xFF bytes start each frame
-const OFF_MTR_PACKAGE_SIZE = 4;       // byte 5: package size
-const OFF_MTR_PACKAGE_TYPE = 5;       // byte 6: package type ('M' or 'S')
-const OFF_MTR_MTR_ID = 6;             // bytes 7-8: MTR unit ID (2 bytes)
+const OFF_MTR_PREAMBLE_LENGTH = 4; // four 0xFF bytes start each frame
+const OFF_MTR_PACKAGE_SIZE = 4; // byte 5: package size
+const OFF_MTR_PACKAGE_TYPE = 5; // byte 6: package type ('M' or 'S')
+const OFF_MTR_MTR_ID = 6; // bytes 7-8: MTR unit ID (2 bytes)
 const LEN_MTR_MTR_ID = 2;
-const OFF_MTR_TIMESTAMP = 8;          // bytes 9-14: timestamp (6 bytes)
+const OFF_MTR_TIMESTAMP = 8; // bytes 9-14: timestamp (6 bytes)
 const LEN_MTR_TIMESTAMP = 6;
-const OFF_MTR_BATTERY_STATUS = 16;    // byte 17: battery status
+const OFF_MTR_BATTERY_STATUS = 16; // byte 17: battery status
 
 // Ecard-specific offsets
-const OFF_MTR_ECARD_PACKAGE_NUMBER = 16;  // bytes 17-20: package number (4 bytes)
+const OFF_MTR_ECARD_PACKAGE_NUMBER = 16; // bytes 17-20: package number (4 bytes)
 const LEN_MTR_ECARD_PACKAGE_NUMBER = 4;
-const OFF_MTR_ECARD_NUMBER = 20;          // bytes 21-23: ecard number (3 bytes)
+const OFF_MTR_ECARD_NUMBER = 20; // bytes 21-23: ecard number (3 bytes)
 const LEN_MTR_ECARD_NUMBER = 3;
 const OFF_MTR_ECARD_PRODUCTION_WEEK = 23; // byte 24
 const OFF_MTR_ECARD_PRODUCTION_YEAR = 24; // byte 25
 const OFF_MTR_ECARD_HEAD_CHECK_START = 4; // bytes 5-25: ecard head checksum region
 const LEN_MTR_ECARD_HEAD_CHECK = 21;
 const OFF_MTR_ECARD_HEAD_CHECK_BYTE = 25; // byte 26: expected head checksum
-const OFF_MTR_ECARD_CONTROL_CODES = 26;   // bytes 27-176: 50 × (code + 2-byte time)
+const OFF_MTR_ECARD_CONTROL_CODES = 26; // bytes 27-176: 50 × (code + 2-byte time)
 const LEN_MTR_ECARD_CONTROL_CODES = 150;
-const OFF_MTR_ECARD_ASCII_STRING = 176;   // bytes 177-232: ASCII string
+const OFF_MTR_ECARD_ASCII_STRING = 176; // bytes 177-232: ASCII string
 const LEN_MTR_ECARD_ASCII_STRING = 56;
-const OFF_MTR_ECARD_TRANSFER_CHECK_REGION = 0;   // bytes 1-232
+const OFF_MTR_ECARD_TRANSFER_CHECK_REGION = 0; // bytes 1-232
 const LEN_MTR_ECARD_TRANSFER_CHECK_REGION = 232;
-const OFF_MTR_ECARD_TRANSFER_CHECK_BYTE = 232;   // byte 233
+const OFF_MTR_ECARD_TRANSFER_CHECK_BYTE = 232; // byte 233
 
 // Status message-specific offsets
-const OFF_MTR_STATUS_RECENT_PACKAGE = 17;        // bytes 18-21 (4 bytes)
+const OFF_MTR_STATUS_RECENT_PACKAGE = 17; // bytes 18-21 (4 bytes)
 const LEN_MTR_STATUS_PACKAGE_NUMBER = 4;
-const OFF_MTR_STATUS_OLDEST_PACKAGE = 21;        // bytes 22-25
+const OFF_MTR_STATUS_OLDEST_PACKAGE = 21; // bytes 22-25
 const OFF_MTR_STATUS_SESSION_START_CURRENT = 25; // bytes 26-29
-const OFF_MTR_STATUS_SESSION_START_PREV1 = 29;   // bytes 30-33
+const OFF_MTR_STATUS_SESSION_START_PREV1 = 29; // bytes 30-33
 const OFF_MTR_STATUS_SESSION_START_PREV2 = 33;
 const OFF_MTR_STATUS_SESSION_START_PREV3 = 37;
 const OFF_MTR_STATUS_SESSION_START_PREV4 = 41;
 const OFF_MTR_STATUS_SESSION_START_PREV5 = 45;
 const OFF_MTR_STATUS_SESSION_START_PREV6 = 49;
 const OFF_MTR_STATUS_SESSION_START_PREV7 = 53;
-const OFF_MTR_STATUS_TRANSFER_CHECK_REGION = 0;  // bytes 1-57
+const OFF_MTR_STATUS_TRANSFER_CHECK_REGION = 0; // bytes 1-57
 const LEN_MTR_STATUS_TRANSFER_CHECK_REGION = 57;
-const OFF_MTR_STATUS_TRANSFER_CHECK_BYTE = 57;   // byte 58
-const OFF_MTR_TYPE_DETECT_MIN_LENGTH = 6;        // need at least 6 bytes to read type byte
+const OFF_MTR_STATUS_TRANSFER_CHECK_BYTE = 57; // byte 58
+const OFF_MTR_TYPE_DETECT_MIN_LENGTH = 6; // need at least 6 bytes to read type byte
 
 class Mtr4Unpacker {
   /** Ringbuffer */
@@ -156,36 +156,74 @@ class Mtr4Unpacker {
 
   parseEcard(ecardData: Uint8Array): EcardMtr {
     const decoder = new TextDecoder("ascii");
-    const asciiString = decoder.decode(new DataView(ecardData.buffer, OFF_MTR_ECARD_ASCII_STRING, LEN_MTR_ECARD_ASCII_STRING));
-    const packageType = decoder.decode(new DataView(ecardData.buffer, OFF_MTR_PACKAGE_TYPE, 1));
+    const asciiString = decoder.decode(
+      new DataView(
+        ecardData.buffer,
+        OFF_MTR_ECARD_ASCII_STRING,
+        LEN_MTR_ECARD_ASCII_STRING,
+      ),
+    );
+    const packageType = decoder.decode(
+      new DataView(ecardData.buffer, OFF_MTR_PACKAGE_TYPE, 1),
+    );
 
     if (packageType !== PackageType.EcardMtr) {
       console.error("Wrong package type: " + packageType);
     }
 
     const batteryStatus =
-      ecardData[OFF_MTR_BATTERY_STATUS] === 0 ? BatteryStatus.OK : BatteryStatus.Low;
+      ecardData[OFF_MTR_BATTERY_STATUS] === 0
+        ? BatteryStatus.OK
+        : BatteryStatus.Low;
 
     return {
       packageSize: ecardData[OFF_MTR_PACKAGE_SIZE],
       packageType: PackageType.EcardMtr,
-      mtrId: bytesToInt(new DataView(ecardData.buffer, OFF_MTR_MTR_ID, LEN_MTR_MTR_ID)),
-      timestamp: bytesToDate(new DataView(ecardData.buffer, OFF_MTR_TIMESTAMP, LEN_MTR_TIMESTAMP)),
+      mtrId: bytesToInt(
+        new DataView(ecardData.buffer, OFF_MTR_MTR_ID, LEN_MTR_MTR_ID),
+      ),
+      timestamp: bytesToDate(
+        new DataView(ecardData.buffer, OFF_MTR_TIMESTAMP, LEN_MTR_TIMESTAMP),
+      ),
       batteryStatus,
-      packageNumber: bytesToInt(new DataView(ecardData.buffer, OFF_MTR_ECARD_PACKAGE_NUMBER, LEN_MTR_ECARD_PACKAGE_NUMBER)),
-      ecardNumber: bytesToInt(new DataView(ecardData.buffer, OFF_MTR_ECARD_NUMBER, LEN_MTR_ECARD_NUMBER)),
+      packageNumber: bytesToInt(
+        new DataView(
+          ecardData.buffer,
+          OFF_MTR_ECARD_PACKAGE_NUMBER,
+          LEN_MTR_ECARD_PACKAGE_NUMBER,
+        ),
+      ),
+      ecardNumber: bytesToInt(
+        new DataView(
+          ecardData.buffer,
+          OFF_MTR_ECARD_NUMBER,
+          LEN_MTR_ECARD_NUMBER,
+        ),
+      ),
       ecardProductionWeek: ecardData[OFF_MTR_ECARD_PRODUCTION_WEEK],
       ecardProductionYear: ecardData[OFF_MTR_ECARD_PRODUCTION_YEAR],
       validEcardHeadCheckByte: checkControlCode(
-        new DataView(ecardData.buffer, OFF_MTR_ECARD_HEAD_CHECK_START, LEN_MTR_ECARD_HEAD_CHECK),
+        new DataView(
+          ecardData.buffer,
+          OFF_MTR_ECARD_HEAD_CHECK_START,
+          LEN_MTR_ECARD_HEAD_CHECK,
+        ),
         ecardData[OFF_MTR_ECARD_HEAD_CHECK_BYTE],
       ),
       controlCodes: getControlCodeInformation(
-        new DataView(ecardData.buffer, OFF_MTR_ECARD_CONTROL_CODES, LEN_MTR_ECARD_CONTROL_CODES),
+        new DataView(
+          ecardData.buffer,
+          OFF_MTR_ECARD_CONTROL_CODES,
+          LEN_MTR_ECARD_CONTROL_CODES,
+        ),
       ),
       asciiString,
       validTransferCheckByte: checkControlCode(
-        new DataView(ecardData.buffer, OFF_MTR_ECARD_TRANSFER_CHECK_REGION, LEN_MTR_ECARD_TRANSFER_CHECK_REGION),
+        new DataView(
+          ecardData.buffer,
+          OFF_MTR_ECARD_TRANSFER_CHECK_REGION,
+          LEN_MTR_ECARD_TRANSFER_CHECK_REGION,
+        ),
         ecardData[OFF_MTR_ECARD_TRANSFER_CHECK_BYTE],
       ),
     };
@@ -202,28 +240,100 @@ class Mtr4Unpacker {
     }
 
     const batteryStatus =
-      statusMessage[OFF_MTR_BATTERY_STATUS] === 0 ? BatteryStatus.OK : BatteryStatus.Low;
+      statusMessage[OFF_MTR_BATTERY_STATUS] === 0
+        ? BatteryStatus.OK
+        : BatteryStatus.Low;
 
     return {
       packageSize: statusMessage[OFF_MTR_PACKAGE_SIZE],
       packageType: PackageType.StatusMessage,
-      mtrId: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_MTR_ID, LEN_MTR_MTR_ID)),
-      currentTime: bytesToDate(new DataView(statusMessage.buffer, OFF_MTR_TIMESTAMP, LEN_MTR_TIMESTAMP)),
-      batteryStatus,
-      recentPackage: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_RECENT_PACKAGE, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      oldestPackage: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_OLDEST_PACKAGE, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      currentSessionStart: bytesToInt(
-        new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_CURRENT, LEN_MTR_STATUS_PACKAGE_NUMBER),
+      mtrId: bytesToInt(
+        new DataView(statusMessage.buffer, OFF_MTR_MTR_ID, LEN_MTR_MTR_ID),
       ),
-      prev1SessionStart: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_PREV1, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      prev2SessionStart: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_PREV2, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      prev3SessionStart: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_PREV3, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      prev4SessionStart: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_PREV4, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      prev5SessionStart: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_PREV5, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      prev6SessionStart: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_PREV6, LEN_MTR_STATUS_PACKAGE_NUMBER)),
-      prev7SessionStart: bytesToInt(new DataView(statusMessage.buffer, OFF_MTR_STATUS_SESSION_START_PREV7, LEN_MTR_STATUS_PACKAGE_NUMBER)),
+      currentTime: bytesToDate(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_TIMESTAMP,
+          LEN_MTR_TIMESTAMP,
+        ),
+      ),
+      batteryStatus,
+      recentPackage: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_RECENT_PACKAGE,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      oldestPackage: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_OLDEST_PACKAGE,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      currentSessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_CURRENT,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      prev1SessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_PREV1,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      prev2SessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_PREV2,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      prev3SessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_PREV3,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      prev4SessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_PREV4,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      prev5SessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_PREV5,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      prev6SessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_PREV6,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
+      prev7SessionStart: bytesToInt(
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_SESSION_START_PREV7,
+          LEN_MTR_STATUS_PACKAGE_NUMBER,
+        ),
+      ),
       validTransferCheckByte: checkControlCode(
-        new DataView(statusMessage.buffer, OFF_MTR_STATUS_TRANSFER_CHECK_REGION, LEN_MTR_STATUS_TRANSFER_CHECK_REGION),
+        new DataView(
+          statusMessage.buffer,
+          OFF_MTR_STATUS_TRANSFER_CHECK_REGION,
+          LEN_MTR_STATUS_TRANSFER_CHECK_REGION,
+        ),
         statusMessage[OFF_MTR_STATUS_TRANSFER_CHECK_BYTE],
       ),
     };
