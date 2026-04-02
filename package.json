@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rm -rf dist/",
     "build": "tsc -b",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "npm run build",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "test": "jest"

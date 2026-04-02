@@ -12,8 +12,8 @@ jobs:
       #- uses: actions/setup-node@v3
       #  with:
       #    node-version: 16
-      - uses: bahmutov/npm-install@v1 # For improved caching of NPM/Yarn
-      - run: yarn --frozen-lockfile
+      - uses: bahmutov/npm-install@v1 # For improved caching of NPM
+      - run: npm ci
       - run: npm run build
       - run: npm run lint
       - run: npm run test
@@ -27,10 +27,10 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-      - uses: bahmutov/npm-install@v1 # For improved caching of NPM/Yarn
+      - uses: bahmutov/npm-install@v1 # For improved caching of NPM/
         with:
           working-directory: example
-      - run: yarn --frozen-lockfile
+      - run: npm ci
         working-directory: example
       - run: npm run build
         working-directory: example

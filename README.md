@@ -19,7 +19,7 @@ does also work on Chrome for Android.
 This library is published to NPM as ES modules (no CommonJS/IIFE):
 
 ```shell
-yarn add @mikaello/emit-punch-card-communication
+npm install @mikaello/emit-punch-card-communication
 ```
 
 ## Usage
