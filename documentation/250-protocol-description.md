@@ -52,7 +52,7 @@ Description of format:
   <dd>The S-field indicates the number of disturbances/noise that woke up the e-card but was not recognized the signal</dd>
 
   <dt>P0000</dt>
-  <dd>The P-field indicates the number of "tests/readings". A test is when e-card is made put to sleep by MTR or 250-control within approx 4 minutes from beeing waken-up.</dd>
+  <dd>The P-field indicates the number of "tests/readings". A test is when e-card is made put to sleep by MTR or 250-control within approx 4 minutes from being woken up.</dd>
 
   <dt>L00000</dt>
   <dd>The L-field indicates the number of events when e-card was awake for more than approx 4 min.</dd>

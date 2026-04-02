@@ -186,7 +186,7 @@ export class EmitEkt250TransformStream extends TransformStream<
         unpacker.onChunk = (chunk) => controller.enqueue(chunk);
       },
       transform(uint8Array) {
-        const od = 255 - 32; // neccessary to XOR with this, see OdTransformStream
+        const od = 255 - 32; // necessary to XOR with this, see OdTransformStream
         unpacker.addBinaryData(uint8Array.map((byte) => byte ^ od));
       },
     });

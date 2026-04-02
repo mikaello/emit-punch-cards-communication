@@ -42,7 +42,7 @@ export const getNewSessionCommand = () => {
 /**
  * `/GBxxxx`, Get message binary. Will send a single data-message from history
  * in the format of a MTR message. The MTR will continue "polling" for e-cards
- * during data sending, with short dealy for receipt. Least significant byte
+ * during data sending, with short delay for receipt. Least significant byte
  * first. Use {@link getStatusCommand}  to find the xxxx you are looking for.
  * @see EcardMtr
  */

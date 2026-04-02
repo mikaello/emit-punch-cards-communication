@@ -42,7 +42,7 @@ export class EmitEscanUnpacker {
   /** New data will be written to this position */
   writePosition: number;
 
-  /** Everytime a new frame is compiled, this function will get it */
+  /** Every time a new frame is compiled, this function will get it */
   onChunk: null | ((chunk: UsbFrame | DumpTagFrame) => void);
 
   constructor() {
@@ -181,7 +181,7 @@ export class EmitEscanUnpacker {
  * This transform stream unpacks objects of frames from an eScan device.
  *
  * Unfortunately this does not work at the moment, it seems that the streaming takes
- * to much time, and as a result we got package loss. Use the `EmitEscanUnpacker`
+ * too much time, and as a result we got package loss. Use the `EmitEscanUnpacker`
  * directly instead.
  *
  * It can be consumed by a ReadableStream's pipeThrough method.

@@ -23,7 +23,7 @@ export const getControlCodeInformation = (view: DataView) => {
 
     if (i > 0 && code === 0) {
       /*
-       * Only the first control can have code 0. The next occurence of code 0
+       * Only the first control can have code 0. The next occurrence of code 0
        * means that we are finished reading controls.
        */
       break;
@@ -38,7 +38,7 @@ export const getControlCodeInformation = (view: DataView) => {
      * The last stamped code will occur in duplicates (number of duplicates will
      * depend on how long the runner let his runner unit be on the EKT-device).
      *
-     * So we will remove duplicates of last control, since only the first punch matter
+     * So we will remove duplicates of last control, since only the first punch matters
      */
     const { code: finishCode } = codes[codes.length - 1];
     const indexOfFirstPunchOfLastControl = codes.findIndex(
@@ -56,7 +56,7 @@ export const getControlCodeInformation = (view: DataView) => {
 /**
  * Returns null if it does not exist `preambleLength` number of consecutive `0xFF`.
  * Else return start position of consecutive `0xFF`. If more than `preambleLength`
- * number of `0xFF`, ignore the first occurences.
+ * number of `0xFF`, ignore the first occurrences.
  *
  * @return `null` if no preamble is found, else return position of start of preamble
  */

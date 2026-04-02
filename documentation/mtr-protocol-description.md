@@ -41,10 +41,10 @@ Data is sent as serial data over USB.
   <dd>hour: values accepted are 0 to 23</dd>
 
   <dt>m</dt>
-  <dd>minute: values accepted are 0 59</dd>
+  <dd>minute: values accepted are 0 to 59</dd>
 
   <dt>s</dt>
-  <dd>second: values accepted are 0 59</dd>
+  <dd>second: values accepted are 0 to 59</dd>
   </dl>
   </dd>
 
@@ -69,11 +69,11 @@ format:
 | 15-16   | TS milliseconds | Milliseconds, NOT YET USED, WILL BE `0` IN THIS VERSION.                                                                                 | 0x00  | 2               |
 | 17-20   | package no.     | Binary Counter, from `1` and up; Least significant byte first                                                                            |       | 4               |
 | 21-23   | e-card no.      | Binary, Least significant byte first                                                                                                     |       | 3               |
-| 24      | Production week | `0-53` (`0` when package is retrived from "history", e.g. when spooling)                                                                 |       | 1               |
-| 25      | Production year | `94-99`,`0-..X` (`0` when package is retrived from "history", e.g. when spooling)                                                        |       | 1               |
-| 26      | e-card head sum | head check sum <TODO: how to calculate?> (value `0` when package is retrived from "history", e.g. when spooling)                         |       | 1               |
+| 24      | Production week | `0-53` (`0` when package is retrieved from "history", e.g. when spooling)                                                                |       | 1               |
+| 25      | Production year | `94-99`,`0-..X` (`0` when package is retrieved from "history", e.g. when spooling)                                                       |       | 1               |
+| 26      | e-card head sum | head check sum <TODO: how to calculate?> (value `0` when package is retrieved from "history", e.g. when spooling)                        |       | 1               |
 | 27-176  | control-codes   | Control codes and times. 50 x (1 byte binary control code 0-250 and 2 bytes binary time 0-65534 sec). Unused controls and times are `0`. |       | 150             |
-| 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrived from "history" (see [ASCII-string](#ascii-string-in-mtr-message))               |       | 56              |
+| 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrieved from "history" (see [ASCII-string](#ascii-string-in-mtr-message))              |       | 56              |
 | 233     | Checksum        | Binary SUM (MOD 256) of all bytes before this byte (including `preamble`) should equal this byte (NB. different than 250-device)         |       | 1               |
 | 234     | NULL-filler     | Binary `0`. To avoid potential 5 times `0xFF`, making it easier to haunt `preamble`                                                      | 0x00  | 1               |
 |         |                 |                                                                                                                                          |       |                 |
@@ -83,8 +83,8 @@ All bytes must be XOR-ed with OD (255 - 32).
 
 ## Status message
 
-A status message message is the response for a `/ST` command to the MTR, it has
-the following format:
+A status message is the response for a `/ST` command to the MTR, it has the
+following format:
 
 | Byte  | Name                 | Description                                                                                                                         | Value        | Number of bytes |
 | ----- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ | --------------- |
@@ -110,7 +110,7 @@ the following format:
 |       |                      |                                                                                                                                     |              |                 |
 |       |                      | **SUM**                                                                                                                             |              | **59**          |
 
-NB: All names ending with `#` denotes a number with the least signicant byte
+NB: All names ending with `#` denotes a number with the least significant byte
 first. This number is meant to be used with the `/SBxxxx` and `/GBxxxx` commands
 to the MTR.
 
@@ -119,7 +119,7 @@ to the MTR.
 The 56 ASCII bytes sent from e-card will have the following info (only in
 on-line mode! Offline all blank!).
 
-NOTE: This ASCII string i reprogrammable, so no assumption should be made that
+NOTE: This ASCII string is reprogrammable, so no assumption should be made that
 the following data will remain correct for future versions of e-cards.
 
 ### New e-cards (manufactured after summer 1998 with green/amber casing)
@@ -131,7 +131,7 @@ Example: `"EMIT EPT SYS VER 2 DISP-1 S0059P0136L0004 "`
   <dd>The S-field indicates the number of disturbances/noise that woke up the e-card but was not recognized the signal</dd>
 
   <dt>P0000</dt>
-  <dd>The P-field indicates the number of "tests/readings". A test is when e-card is made put to sleep by MTR or 250-control within approx 4 minutes from beeing waken-up.</dd>
+  <dd>The P-field indicates the number of "tests/readings". A test is when e-card is made put to sleep by MTR or 250-control within approx 4 minutes from being woken up.</dd>
 
   <dt>L00000</dt>
   <dd>The L-field indicates the number of events when e-card was awake for more than approx 4 min.</dd>

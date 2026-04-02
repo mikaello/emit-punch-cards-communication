@@ -4,7 +4,7 @@
 export const int32ToBytes = (number: number) => {
   const buffer = new ArrayBuffer(4); // an Int32 takes 4 bytes
   const view = new DataView(buffer);
-  view.setUint32(0, number, true); // byteOffset = 0; litteEndian = true
+  view.setUint32(0, number, true); // byteOffset = 0; littleEndian = true
   return buffer;
 };
 
@@ -40,8 +40,8 @@ export const bytesToInt = (view: DataView) => {
  * * `1`, month: values accepted are 1 to 12
  * * `2`, daynumber: values accepted are 1 to 31
  * * `3`, hour: values accepted are 0 to 23
- * * `4`, minute: values accepted are 0 59
- * * `5`, second: values accepted are 0 59
+ * * `4`, minute: values accepted are 0 to 59
+ * * `5`, second: values accepted are 0 to 59
  */
 export const bytesToDate = (view: DataView) => {
   if (view.byteLength !== 6) {
