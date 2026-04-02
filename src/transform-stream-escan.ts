@@ -110,16 +110,14 @@ export class EmitEscanUnpacker {
 
     const i = iMatch?.groups;
     return {
-      // @ts-ignore
-      productName: i?.productName ?? "unknown",
+      productName: (i?.productName ?? "unknown") as UsbFrame["productName"],
       hardwareVersion: i?.hwVersion ?? "unknown",
       softwareVersion: i?.swVersion ?? "unknown",
       version: i?.version ?? "unknown",
-      // @ts-ignore
-      eScanMessageType: bMatch?.groups?.messageType,
+      eScanMessageType: bMatch?.groups
+        ?.messageType as UsbFrame["eScanMessageType"],
       elineCode: cMatch?.groups?.elineCode ?? "",
-      // @ts-ignore
-      tagProtocol: xMatch?.groups?.protocol, //"0" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
+      tagProtocol: xMatch?.groups?.protocol as UsbFrame["tagProtocol"],
       serialNumber: yMatch?.groups?.serialNum ?? "",
       eScanBatteryVoltageMillivolt: "", // eScan only
       eScanUsbVoltageMillivolt: "", // eScan only
