@@ -30,6 +30,24 @@ export const serialOptions250 = {
 
 const ecardLength = 217;
 
+// Byte offsets within a 250 ecard message (after XOR decoding, 1-indexed in spec)
+const OFF_250_ECARD_NUMBER = 2; // bytes 3-5: ecard number (3 bytes, LSB)
+const LEN_250_ECARD_NUMBER = 3;
+const OFF_250_PRODUCTION_WEEK = 6; // byte 7
+const OFF_250_PRODUCTION_YEAR = 7; // byte 8
+const OFF_250_HEAD_CHECK_START = 2; // bytes 3-10: ecard head checksum region
+const LEN_250_HEAD_CHECK = 8;
+const OFF_250_CONTROL_CODES = 10; // bytes 11-160: 50 × (code + 2-byte time)
+const LEN_250_CONTROL_CODES = 150;
+const OFF_250_EMIT_TIME_STRING = 160; // bytes 161-192: ASCII emit time system string
+const LEN_250_EMIT_TIME_STRING = 32;
+const OFF_250_DISP1 = 192; // bytes 193-200: display string 1
+const LEN_250_DISP = 8;
+const OFF_250_DISP2 = 200; // bytes 201-208: display string 2
+const OFF_250_DISP3 = 208; // bytes 209-216: display string 3
+const LEN_250_METADATA = 10; // bytes needed for metadata-only parse (up to head check)
+const LEN_250_PREAMBLE = 2; // two 0xFF bytes start each frame
+
 /**
  * This class unpacks Uint8Arrays and sends ecard objects when it gained enough data.
  *
@@ -74,7 +92,7 @@ class EmitEKT250Unpacker {
     );
 
     const newReadPosition = checkForNewReadPosition(
-      2,
+      LEN_250_PREAMBLE,
       new DataView(this.data.buffer),
       this.writePosition,
       uint8Array.byteLength,
@@ -91,22 +109,46 @@ class EmitEKT250Unpacker {
   parseEcard(ecardData: Uint8Array): Ecard250 {
     const decoder = new TextDecoder("ascii");
     const emitTimeSystemString = decoder.decode(
-      new DataView(ecardData.buffer, 160, 32),
+      new DataView(
+        ecardData.buffer,
+        OFF_250_EMIT_TIME_STRING,
+        LEN_250_EMIT_TIME_STRING,
+      ),
     );
-    const disp1 = decoder.decode(new DataView(ecardData.buffer, 192, 8));
-    const disp2 = decoder.decode(new DataView(ecardData.buffer, 200, 8));
-    const disp3 = decoder.decode(new DataView(ecardData.buffer, 208, 8));
+    const disp1 = decoder.decode(
+      new DataView(ecardData.buffer, OFF_250_DISP1, LEN_250_DISP),
+    );
+    const disp2 = decoder.decode(
+      new DataView(ecardData.buffer, OFF_250_DISP2, LEN_250_DISP),
+    );
+    const disp3 = decoder.decode(
+      new DataView(ecardData.buffer, OFF_250_DISP3, LEN_250_DISP),
+    );
 
     return {
-      ecardNumber: bytesToInt(new DataView(ecardData.buffer, 2, 3)),
-      ecardProductionWeek: ecardData[6],
-      ecardProductionYear: ecardData[7],
+      ecardNumber: bytesToInt(
+        new DataView(
+          ecardData.buffer,
+          OFF_250_ECARD_NUMBER,
+          LEN_250_ECARD_NUMBER,
+        ),
+      ),
+      ecardProductionWeek: ecardData[OFF_250_PRODUCTION_WEEK],
+      ecardProductionYear: ecardData[OFF_250_PRODUCTION_YEAR],
       validEcardCheckByte: checkControlCode(
-        new DataView(ecardData.buffer, 2, 8),
+        new DataView(
+          ecardData.buffer,
+          OFF_250_HEAD_CHECK_START,
+          LEN_250_HEAD_CHECK,
+        ),
         0,
       ),
       controlCodes: getControlCodeInformation(
-        new DataView(ecardData.buffer, 10, 150),
+        new DataView(
+          ecardData.buffer,
+          OFF_250_CONTROL_CODES,
+          LEN_250_CONTROL_CODES,
+        ),
       ),
       emitTimeSystemString,
       disp1,
@@ -121,12 +163,25 @@ class EmitEKT250Unpacker {
   }
 
   parseEcardMetadata(metadata: Uint8Array): Ecard250 {
-    const checkByte = checkControlCode(new DataView(metadata.buffer, 2, 8), 0);
+    const checkByte = checkControlCode(
+      new DataView(
+        metadata.buffer,
+        OFF_250_HEAD_CHECK_START,
+        LEN_250_HEAD_CHECK,
+      ),
+      0,
+    );
 
     return {
-      ecardNumber: bytesToInt(new DataView(metadata.buffer, 2, 3)),
-      ecardProductionWeek: metadata[6],
-      ecardProductionYear: metadata[7],
+      ecardNumber: bytesToInt(
+        new DataView(
+          metadata.buffer,
+          OFF_250_ECARD_NUMBER,
+          LEN_250_ECARD_NUMBER,
+        ),
+      ),
+      ecardProductionWeek: metadata[OFF_250_PRODUCTION_WEEK],
+      ecardProductionYear: metadata[OFF_250_PRODUCTION_YEAR],
       validEcardCheckByte: checkByte,
       controlCodes: [],
       validTransferCheckByte: false,
@@ -153,11 +208,11 @@ class EmitEKT250Unpacker {
     } else if (
       this.sendMetadataWhenRead &&
       !this.parsedEcardMetadata &&
-      currentReadLength >= 10
+      currentReadLength >= LEN_250_METADATA
     ) {
       this.parsedEcardMetadata = true;
       const metadata = this.parseEcardMetadata(
-        getRangeFromRingBuffer(this.data, this.readPosition, 10),
+        getRangeFromRingBuffer(this.data, this.readPosition, LEN_250_METADATA),
       );
       this.onChunk && this.onChunk(metadata);
     }
