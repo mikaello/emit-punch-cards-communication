@@ -41,7 +41,7 @@
     "@types/node": "24.12.2",
     "prettier": "3.8.1",
     "typescript": "6.0.2",
-    "vitest": "3.2.0",
+    "vitest": "3.2.4",
     "web-streams-polyfill": "4.2.0"
   }
 }
