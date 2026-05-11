@@ -39,7 +39,7 @@
   "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
   "devDependencies": {
     "@types/node": "24.12.3",
-    "prettier": "3.8.1",
+    "prettier": "3.8.3",
     "typescript": "6.0.2",
     "vitest": "3.2.4",
     "web-streams-polyfill": "4.2.0"
