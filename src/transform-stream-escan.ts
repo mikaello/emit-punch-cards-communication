@@ -7,6 +7,11 @@ import {
   USB_STOP_READ_BYTE,
 } from "./transform-stream-utils";
 
+// Only log in development (NODE_ENV=development in Node.js; bundlers substitute this in browser)
+const isDev =
+  (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env
+    ?.NODE_ENV === "development";
+
 export type UsbFrame = {
   productName: "eScan" | "ECU";
   hardwareVersion: string;
@@ -161,16 +166,18 @@ export class EmitEscanUnpacker {
       frame = this.parseDumpTag(range);
     } else if (this.data[this.readPosition] === iByte) {
       frame = this.parseFrame(range);
-    } else {
+    } else if (isDev) {
       console.error("Unknown starting byte", this.data[this.readPosition]);
     }
-    console.log(
-      `Frame: ${frameSize}, datalength: ${this.data.byteLength}, readPos: ${this.readPosition}, finPos: ${completeReadingPosition}`,
-      frame,
-      new TextDecoder("utf-8").decode(
-        getRangeFromRingBuffer(this.data, this.readPosition, frameSize),
-      ),
-    );
+    if (isDev) {
+      console.log(
+        `Frame: ${frameSize}, datalength: ${this.data.byteLength}, readPos: ${this.readPosition}, finPos: ${completeReadingPosition}`,
+        frame,
+        new TextDecoder("utf-8").decode(
+          getRangeFromRingBuffer(this.data, this.readPosition, frameSize),
+        ),
+      );
+    }
     this.onChunk && this.onChunk(frame);
   }
 }
