@@ -168,7 +168,9 @@ class Mtr4Unpacker {
     );
 
     if (packageType !== PackageType.EcardMtr) {
-      console.error("Wrong package type: " + packageType);
+      throw new Error(
+        `MTR4 protocol mismatch: expected ecard type '${PackageType.EcardMtr}', got '${packageType}'`,
+      );
     }
 
     const batteryStatus =
@@ -236,7 +238,9 @@ class Mtr4Unpacker {
     );
 
     if (packageType !== PackageType.StatusMessage) {
-      console.error("Wrong package type: " + packageType);
+      throw new Error(
+        `MTR4 protocol mismatch: expected status type '${PackageType.StatusMessage}', got '${packageType}'`,
+      );
     }
 
     const batteryStatus =
