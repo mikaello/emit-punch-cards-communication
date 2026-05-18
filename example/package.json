@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
   "devDependencies": {
-    "@types/node": "24.12.3",
+    "@types/node": "24.12.4",
     "@types/w3c-web-usb": "1.0.14",
     "typescript": "6.0.2",
     "vite": "8.0.8"
