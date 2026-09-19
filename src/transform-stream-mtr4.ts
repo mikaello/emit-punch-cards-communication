@@ -26,7 +26,8 @@ export type EcardMtr = {
   packageType: PackageType.EcardMtr;
   mtrId: number;
   timestamp: Date;
-  batteryStatus: BatteryStatus;
+  /** Not present in card frames; request an MtrStatusMessage for battery status. */
+  batteryStatus?: BatteryStatus;
   packageNumber: number;
   ecardNumber: number;
   ecardProductionWeek: number;
@@ -177,11 +178,6 @@ class Mtr4Unpacker {
       );
     }
 
-    const batteryStatus =
-      ecardData[OFF_MTR_BATTERY_STATUS] === 0
-        ? BatteryStatus.OK
-        : BatteryStatus.Low;
-
     return {
       packageSize: ecardData[OFF_MTR_PACKAGE_SIZE],
       packageType: PackageType.EcardMtr,
@@ -191,7 +187,6 @@ class Mtr4Unpacker {
       timestamp: bytesToDate(
         new DataView(ecardData.buffer, OFF_MTR_TIMESTAMP, LEN_MTR_TIMESTAMP),
       ),
-      batteryStatus,
       packageNumber: bytesToInt(
         new DataView(
           ecardData.buffer,
