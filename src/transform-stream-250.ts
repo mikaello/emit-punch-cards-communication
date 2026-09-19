@@ -1,11 +1,11 @@
-import { bytesToInt, checkControlCode } from "./byteHandlingUtils";
+import { bytesToInt, checkControlCode } from "./byteHandlingUtils.js";
 import {
   getControlCodeInformation,
   addToRingBuffer,
   checkForNewReadPosition,
   ringBufferReadLength,
   getRangeFromRingBuffer,
-} from "./transform-stream-utils";
+} from "./transform-stream-utils.js";
 
 export type Ecard250 = {
   ecardNumber: number;
