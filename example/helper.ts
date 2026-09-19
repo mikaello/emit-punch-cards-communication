@@ -228,11 +228,12 @@ export const connectMtr4 = async () => {
     inputDoneMtr4 = portMtr4.readable.pipeTo(emitTransformer.writable);
     readerMtr4 = emitTransformer.readable.getReader();
 
-    let ts = new TransformStream();
-    ts.readable.pipeTo(portMtr4.writable);
-    let writer = ts.writable.getWriter();
-    writer.write(getStatusCommand());
-    writer.releaseLock();
+    const writer = portMtr4.writable.getWriter();
+    try {
+      await writer.write(getStatusCommand());
+    } finally {
+      writer.releaseLock();
+    }
 
     while (true) {
       const { value, done } = await readerMtr4.read();
