@@ -38,16 +38,18 @@ export const getControlCodeInformation = (view: DataView) => {
      * The last stamped code will occur in duplicates (number of duplicates will
      * depend on how long the runner let his runner unit be on the EKT-device).
      *
-     * So we will remove duplicates of last control, since only the first punch matters
+     * Only collapse the trailing run: an earlier visit to this control may
+     * belong to a different leg of the course.
      */
     const { code: finishCode } = codes[codes.length - 1];
-    const indexOfFirstPunchOfLastControl = codes.findIndex(
-      ({ code }) => code === finishCode,
-    );
-    codes = codes.filter(
-      ({ code }, index) =>
-        code !== finishCode || index === indexOfFirstPunchOfLastControl,
-    );
+    let firstFinalPunch = codes.length - 1;
+    while (
+      firstFinalPunch > 0 &&
+      codes[firstFinalPunch - 1].code === finishCode
+    ) {
+      firstFinalPunch--;
+    }
+    codes = codes.slice(0, firstFinalPunch + 1);
   }
 
   return codes;
