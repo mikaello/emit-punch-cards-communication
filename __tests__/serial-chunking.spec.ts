@@ -106,13 +106,16 @@ test("MTR4 reads mixed status and card messages in order", async () => {
   expect(values.every((v) => v.validTransferCheckByte)).toBe(true);
 });
 
-test("MTR4 reads the complete recorded 2040-card spool in one chunk", async () => {
+test("MTR4 preserves all messages in the recorded spool in one chunk", async () => {
   const values = await readChunks(
     [spool2040cardsMtr4],
     new Mtr4TransformStream(),
   );
   expect(values).toHaveLength(2040);
-  // The saved capture itself contains 43 checksum failures; preserve the flags.
+  expect(values.filter((v) => v.packageType === "M")).toHaveLength(1997);
+  expect(values.filter((v) => v.packageType === "S")).toHaveLength(43);
+  // 43 blocks have status headers but card-shaped tails and invalid checksums.
+  // Preserve the decoder's failure flags, rather than treating them as cards.
   expect(values.filter((v) => !v.validTransferCheckByte)).toHaveLength(43);
   const frames = Array.from({ length: 2040 }, (_, i) =>
     spool2040cardsMtr4.slice(i * 234, (i + 1) * 234),
