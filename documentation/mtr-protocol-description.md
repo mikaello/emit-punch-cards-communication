@@ -79,14 +79,13 @@ format:
 |         |                 |                                                                                                                                          |       |                 |
 |         |                 | **SUM**                                                                                                                                  |       | **234**         |
 
-MTR frames are parsed as received, without the XOR decoding used by the 250
-reader.
+Saved MTR4 frames require no XOR decoding, unlike the 250 reader.
 
-The saved MTR4 live and history captures retain the card header checksum. For
-card 208560, bytes 21-26 are 176, 46, 3, 27, 14, 246; their sum is 512. The
-check excludes the reader ID, timestamp, and package number. A matching checksum
-does not establish that a card number is valid or that older devices supplied
-production metadata.
+The saved live and history captures retain the card header checksum.
+
+For card 208560, the six card-header bytes sum to 512 (zero modulo 256).
+
+The check excludes reader metadata and does not validate the card number.
 
 ## Status message
 
