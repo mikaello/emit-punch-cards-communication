@@ -26,8 +26,6 @@ export type EcardMtr = {
   packageType: PackageType.EcardMtr;
   mtrId: number;
   timestamp: Date;
-  /** Not present in card frames; request an MtrStatusMessage for battery status. */
-  batteryStatus?: BatteryStatus;
   packageNumber: number;
   ecardNumber: number;
   ecardProductionWeek: number;
