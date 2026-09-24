@@ -10,7 +10,7 @@ Run relevant tests, linting, formatting, and builds before pushing.
 Fix test and lint failures before proceeding.
 Prefer brevity in code and documentation.
 Keep implementation scope tight, and ask before expanding it materially.
-For MTR4 raw-byte debugging, pass `onRawData: bytes => console.log(bytes)` to `Mtr4TransformStream` during local investigation; leave it unset in normal use.
+For MTR4 raw-byte debugging, use `new Mtr4TransformStream({ logRawDataAfterIdle: true })` to log the byte count and a pasteable array after five seconds of silence or when the stream closes.
 
 ## Pull requests
 

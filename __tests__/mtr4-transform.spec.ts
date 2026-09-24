@@ -20,6 +20,54 @@ const createReadableStream = (dataToBeStreamable: Uint8Array) =>
   });
 
 describe("Mtr4TransformStream", () => {
+  test("logs the combined byte count and a pasteable array after traffic stops", async () => {
+    vi.useFakeTimers();
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const stream = new Mtr4TransformStream({ logRawDataAfterIdle: true });
+      const writer = stream.writable.getWriter();
+      const reader = stream.readable.getReader();
+      const finished = reader.read();
+
+      await writer.write(Uint8Array.of(255, 254));
+      await vi.advanceTimersByTimeAsync(3000);
+      await writer.write(Uint8Array.of(0, 1));
+      await vi.advanceTimersByTimeAsync(4999);
+      expect(log).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(1);
+      expect(log.mock.calls).toEqual([
+        ["Number of bytes in this reading: 4"],
+        ["new Uint8Array([255,254,0,1])"],
+      ]);
+
+      await writer.close();
+      await finished;
+    } finally {
+      log.mockRestore();
+      vi.useRealTimers();
+    }
+  });
+
+  test("prints pending raw data when the stream closes", async () => {
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const stream = new Mtr4TransformStream({ logRawDataAfterIdle: true });
+      const writer = stream.writable.getWriter();
+      const reader = stream.readable.getReader();
+      const finished = reader.read();
+
+      await writer.write(Uint8Array.of(1, 2));
+      await writer.close();
+      await finished;
+      expect(log.mock.calls).toEqual([
+        ["Number of bytes in this reading: 2"],
+        ["new Uint8Array([1,2])"],
+      ]);
+    } finally {
+      log.mockRestore();
+    }
+  });
+
   test("exposes raw chunks for diagnostics without letting the callback alter parsing", async () => {
     const input = singleSuccessMtr4.slice();
     const rawChunks: Uint8Array[] = [];

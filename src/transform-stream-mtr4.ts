@@ -58,7 +58,39 @@ export type MtrTypes = EcardMtr | MtrStatusMessage;
 export type Mtr4TransformOptions = {
   /** Receives a copy of each transport chunk for optional diagnostics. */
   onRawData?: (bytes: Uint8Array) => void;
+  /** Logs the byte count and a pasteable array after five seconds of silence. */
+  logRawDataAfterIdle?: boolean;
 };
+
+class RawDataCapture {
+  private chunks: Uint8Array[] = [];
+  private byteLength = 0;
+  private timeout: ReturnType<typeof setTimeout> | null = null;
+
+  add(chunk: Uint8Array) {
+    this.chunks.push(chunk.slice());
+    this.byteLength += chunk.byteLength;
+    if (this.timeout !== null) clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => this.print(), 5000);
+  }
+
+  print() {
+    if (this.timeout !== null) clearTimeout(this.timeout);
+    this.timeout = null;
+    if (this.byteLength === 0) return;
+
+    const bytes = new Uint8Array(this.byteLength);
+    let offset = 0;
+    for (const chunk of this.chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    console.log(`Number of bytes in this reading: ${this.byteLength}`);
+    console.log(`new Uint8Array([${bytes.join(",")}])`);
+    this.chunks = [];
+    this.byteLength = 0;
+  }
+}
 
 /** Number of bytes that an ecard reading takes */
 const ecardSize = 234;
@@ -368,6 +400,9 @@ export class Mtr4TransformStream extends TransformStream<
 > {
   constructor(options: Mtr4TransformOptions = {}) {
     const unpacker = new Mtr4Unpacker();
+    const rawDataCapture = options.logRawDataAfterIdle
+      ? new RawDataCapture()
+      : null;
 
     super({
       start(controller) {
@@ -375,7 +410,11 @@ export class Mtr4TransformStream extends TransformStream<
       },
       transform(uint8Array) {
         if (options.onRawData) options.onRawData(uint8Array.slice());
+        rawDataCapture?.add(uint8Array);
         unpacker.addBinaryData(uint8Array);
+      },
+      flush() {
+        rawDataCapture?.print();
       },
     });
   }
