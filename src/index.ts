@@ -6,6 +6,7 @@ import {
 } from "./transform-stream-250.js";
 import type {
   EcardMtr,
+  Mtr4TransformOptions,
   MtrStatusMessage,
   MtrTypes,
 } from "./transform-stream-mtr4.js";
@@ -22,7 +23,14 @@ import { BatteryStatus, PackageType } from "./transform-stream-utils.js";
 import * as escanCommands from "./escan-commands.js";
 import * as mtr4Commands from "./mtr4-commands.js";
 
-export type { Ecard250, EcardMtr, MtrStatusMessage, MtrTypes, UsbFrame };
+export type {
+  Ecard250,
+  EcardMtr,
+  Mtr4TransformOptions,
+  MtrStatusMessage,
+  MtrTypes,
+  UsbFrame,
+};
 export {
   escanCommands,
   mtr4Commands,

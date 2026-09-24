@@ -20,6 +20,33 @@ const createReadableStream = (dataToBeStreamable: Uint8Array) =>
   });
 
 describe("Mtr4TransformStream", () => {
+  test("exposes raw chunks for diagnostics without letting the callback alter parsing", async () => {
+    const input = singleSuccessMtr4.slice();
+    const rawChunks: Uint8Array[] = [];
+    const source = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(input);
+        controller.close();
+      },
+    });
+    const reader = source
+      .pipeThrough(
+        new Mtr4TransformStream({
+          onRawData(bytes) {
+            rawChunks.push(bytes.slice());
+            bytes[0] = 0;
+          },
+        }),
+      )
+      .getReader();
+
+    const { value } = await reader.read();
+    expect(rawChunks).toEqual([singleSuccessMtr4]);
+    expect(input[0]).toBe(255);
+    expect(value?.packageType).toBe(PackageType.EcardMtr);
+    reader.releaseLock();
+  });
+
   test("that the stream can read a single ecard", async () => {
     const reader = createReadableStream(singleSuccessMtr4)
       .pipeThrough(new Mtr4TransformStream())
