@@ -95,7 +95,12 @@ export class EmitEscanUnpacker {
     const cMatch = /\tC(?<elineCode>[0-9]{1,3})\t/gm.exec(frameText);
     const xMatch = /\tX(?<protocol>[0-9])\t/gm.exec(frameText);
     const yMatch = /\tY(?<serialNum>[0-9]+)\t/gm.exec(frameText);
-    // const aMatch = // TODO: battery parsing
+    // The A field reports voltages in tenths of a volt, optionally with a charge field.
+    const aMatch =
+      /\tA(?<battery>[0-9]{1,3})-(?<usb>[0-9]{1,3})(?:-[+-][0-9]+)?-(?<percentage>[0-9]{1,3})(?=\t|$)/.exec(
+        frameText,
+      );
+    const mMatch = /\tM(?<message>[^\t]+)(?=\t|$)/.exec(frameText);
     const uMatch = /\tU(?<date>[0-9]{2}[.][0-9]{2}[.][0-9]{4})\t/gm.exec(
       frameText,
     );
@@ -113,12 +118,16 @@ export class EmitEscanUnpacker {
       elineCode: cMatch?.groups?.elineCode ?? "",
       tagProtocol: xMatch?.groups?.protocol as UsbFrame["tagProtocol"],
       serialNumber: yMatch?.groups?.serialNum ?? "",
-      eScanBatteryVoltageMillivolt: "", // eScan only
-      eScanUsbVoltageMillivolt: "", // eScan only
-      eScanBatteryPercentage: "", // eScan only
+      eScanBatteryVoltageMillivolt: aMatch?.groups?.battery
+        ? String(Number(aMatch.groups.battery) * 100)
+        : "", // eScan only
+      eScanUsbVoltageMillivolt: aMatch?.groups?.usb
+        ? String(Number(aMatch.groups.usb) * 100)
+        : "", // eScan only
+      eScanBatteryPercentage: aMatch?.groups?.percentage ?? "", // eScan only
       eScanISODate: uMatch?.groups?.date ?? "", // eScan only, ISO date
       timeMilliseconds: wMatch?.groups?.time ?? "", // milliseconds since EPOCH
-      statusMessageAndEvent: "", // eScan only
+      statusMessageAndEvent: mMatch?.groups?.message ?? "", // eScan only
       ecuFirstMessageNumberToday: 0, // ECU only
       ecuTotalMessagesToday: 0, // ECU only
     };

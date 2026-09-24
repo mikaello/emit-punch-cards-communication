@@ -70,6 +70,29 @@ test("buffers a single frame exceeding 4000 bytes", () => {
   ]);
 });
 
+test("parses eScan status voltage, battery, and message fields", () => {
+  const frame = status(1).replace("\tC250", "\tM12-3\tA30-49-+0-100\tC250");
+  expect(collect([encode(frame)])).toMatchObject([
+    {
+      eScanBatteryVoltageMillivolt: "3000",
+      eScanUsbVoltageMillivolt: "4900",
+      eScanBatteryPercentage: "100",
+      statusMessageAndEvent: "12-3",
+    },
+  ]);
+});
+
+test("parses the status voltage field without the optional charge value", () => {
+  const frame = status(1).replace("\tC250", "\tA30-49-100\tC250");
+  expect(collect([encode(frame)])).toMatchObject([
+    {
+      eScanBatteryVoltageMillivolt: "3000",
+      eScanUsbVoltageMillivolt: "4900",
+      eScanBatteryPercentage: "100",
+    },
+  ]);
+});
+
 test("the TransformStream preserves coalesced status messages", async () => {
   const source = new ReadableStream<ArrayBuffer>({
     start(controller) {
