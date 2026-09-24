@@ -106,6 +106,20 @@ export const ringBufferReadLength = (
   return endOfBuffer + readStop;
 };
 
+/** Leave one slot empty so the write position cannot wrap onto an unread frame. */
+export const assertRingBufferHasSpace = (
+  bufferSize: number,
+  readPosition: number,
+  writePosition: number,
+) => {
+  if (
+    ringBufferReadLength(bufferSize, readPosition, writePosition) >=
+    bufferSize - 1
+  ) {
+    throw new Error("Ring buffer overflow: incomplete frame exceeds capacity");
+  }
+};
+
 /**
  * Returns an `Uint8Array` with the bytes from the ringbuffer that corresponds
  * to the given offset and length.

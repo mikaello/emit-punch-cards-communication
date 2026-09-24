@@ -3,6 +3,7 @@ import {
   getControlCodeInformation,
   ringBufferReadLength,
   getRangeFromRingBuffer,
+  assertRingBufferHasSpace,
 } from "./transform-stream-utils.js";
 
 export type Ecard250 = {
@@ -88,6 +89,16 @@ class EmitEKT250Unpacker {
     // Transport reads can split or combine frames, and exceed the ring size.
     // Consume each byte before writing the next so no complete frame is lost.
     for (const byte of uint8Array) {
+      if (
+        this.readingFrame &&
+        !(byte === 0xff && this.preambleCount >= LEN_250_PREAMBLE - 1)
+      ) {
+        assertRingBufferHasSpace(
+          this.data.length,
+          this.readPosition,
+          this.writePosition,
+        );
+      }
       this.data[this.writePosition] = byte;
       this.writePosition = (this.writePosition + 1) % this.data.length;
       this.preambleCount = byte === 0xff ? this.preambleCount + 1 : 0;

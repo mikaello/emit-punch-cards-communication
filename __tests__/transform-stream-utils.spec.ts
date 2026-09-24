@@ -4,6 +4,7 @@ import {
   getRangeFromRingBuffer,
   getByteIndexInNewRingbufferData,
   USB_START_READ_BYTE,
+  assertRingBufferHasSpace,
 } from "../src/transform-stream-utils";
 import { createUSBCommand, USBCommand } from "../src/escan-commands";
 
@@ -19,6 +20,18 @@ describe("ringBufferReadLength", () => {
   test("boundary", () => expect(ringBufferReadLength(10, 7, 2)).toBe(5));
   test("in the middle", () => expect(ringBufferReadLength(7, 2, 5)).toBe(3));
   test("at start", () => expect(ringBufferReadLength(7, 0, 5)).toBe(5));
+});
+
+describe("assertRingBufferHasSpace", () => {
+  test("allows the last free slot before a wrap", () => {
+    expect(() => assertRingBufferHasSpace(8, 6, 4)).not.toThrow();
+  });
+
+  test("rejects a write that would make an unread frame indistinguishable from empty", () => {
+    expect(() => assertRingBufferHasSpace(8, 6, 5)).toThrow(
+      "Ring buffer overflow",
+    );
+  });
 });
 
 describe("getRangeFromRingBuffer", () => {

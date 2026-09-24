@@ -10,6 +10,7 @@ import {
   getMessageType,
   PackageType,
   BatteryStatus,
+  assertRingBufferHasSpace,
 } from "./transform-stream-utils.js";
 
 export const serialOptionsMtr4 = {
@@ -347,6 +348,16 @@ class Mtr4Unpacker {
     // Transport reads can split or combine frames, and exceed the ring size.
     // Consume each byte before writing the next so no complete frame is lost.
     for (const byte of uint8Array) {
+      if (
+        this.readingFrame &&
+        !(byte === 0xff && this.preambleCount >= OFF_MTR_PREAMBLE_LENGTH - 1)
+      ) {
+        assertRingBufferHasSpace(
+          this.data.length,
+          this.readPosition,
+          this.writePosition,
+        );
+      }
       this.data[this.writePosition] = byte;
       this.writePosition = (this.writePosition + 1) % this.data.length;
       this.preambleCount = byte === 0xff ? this.preambleCount + 1 : 0;

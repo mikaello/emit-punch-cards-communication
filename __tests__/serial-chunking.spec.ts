@@ -106,6 +106,14 @@ test("MTR4 reads mixed status and card messages in order", async () => {
   expect(values.every((v) => v.validTransferCheckByte)).toBe(true);
 });
 
+test("MTR4 reports an incomplete frame before its ring buffer wraps", async () => {
+  const incomplete = new Uint8Array(702);
+  incomplete.fill(0xff, 0, 4);
+  await expect(
+    readChunks([incomplete], new Mtr4TransformStream()),
+  ).rejects.toThrow("Ring buffer overflow");
+});
+
 test("MTR4 preserves all messages in the recorded spool in one chunk", async () => {
   const values = await readChunks(
     [spool2040cardsMtr4],
