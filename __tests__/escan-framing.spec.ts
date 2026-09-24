@@ -70,6 +70,50 @@ test("buffers a single frame exceeding 4000 bytes", () => {
   ]);
 });
 
+test("preserves a multi-megabyte tag frame across large USB reads", () => {
+  const unpacker = new EmitEscanUnpacker();
+  const frames: unknown[] = [];
+  const tagSize = 3 * 1024 * 1024;
+  const tag = new Uint8Array(tagSize);
+  tag.fill(0x41);
+  tag[0] = 0x4e;
+  tag[tagSize - 1] = 0x5a;
+  const bytes = new Uint8Array(tagSize + 2);
+  bytes[0] = 0x02;
+  bytes.set(tag, 1);
+  bytes[bytes.length - 1] = 0x03;
+
+  const parseDumpTag = vi
+    .spyOn(unpacker, "parseDumpTag")
+    .mockImplementation((frame) => {
+      expect(frame.length).toBe(tagSize);
+      expect(frame[0]).toBe(0x4e);
+      expect(frame[tagSize - 1]).toBe(0x5a);
+      return {};
+    });
+  unpacker.onChunk = (frame) => frames.push(frame);
+  unpacker.addBinaryData(bytes.subarray(0, 700_000));
+  unpacker.addBinaryData(bytes.subarray(700_000, 2_000_000));
+  unpacker.addBinaryData(bytes.subarray(2_000_000));
+  expect(unpacker.data.byteLength).toBe(4000);
+  unpacker.addBinaryData(encode(status(2)));
+
+  expect(parseDumpTag).toHaveBeenCalledOnce();
+  expect(frames).toMatchObject([{}, { serialNumber: "2" }]);
+});
+
+test("does not read stale bytes beyond the completed frame", () => {
+  const first = status(1).replace(
+    "\x03",
+    `Z${"a".repeat(100)}\tA30-49-100\t\x03`,
+  );
+  const frames = collect([encode(first + status(2))]);
+  expect(frames).toMatchObject([
+    { serialNumber: "1", eScanBatteryPercentage: "100" },
+    { serialNumber: "2", eScanBatteryPercentage: "" },
+  ]);
+});
+
 test("parses eScan status voltage, battery, and message fields", () => {
   const frame = status(1).replace("\tC250", "\tM12-3\tA30-49-+0-100\tC250");
   expect(collect([encode(frame)])).toMatchObject([

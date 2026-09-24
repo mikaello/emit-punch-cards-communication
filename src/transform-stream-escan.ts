@@ -1,6 +1,4 @@
 import {
-  ringBufferReadLength,
-  getRangeFromRingBuffer,
   USB_START_READ_BYTE,
   USB_STOP_READ_BYTE,
 } from "./transform-stream-utils.js";
@@ -9,6 +7,9 @@ import {
 const isDev =
   (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env
     ?.NODE_ENV === "development";
+
+const initialFrameBufferSize = 4000;
+const maxRetainedFrameBufferSize = 1024 * 1024;
 
 export type UsbFrame = {
   productName: "eScan" | "ECU";
@@ -50,7 +51,7 @@ export class EmitEscanUnpacker {
   onChunk: null | ((chunk: UsbFrame | DumpTagFrame) => void);
 
   constructor() {
-    this.data = new Uint8Array(4000);
+    this.data = new Uint8Array(initialFrameBufferSize);
     this.readPosition = 0;
     this.writePosition = 0;
     this.onChunk = null;
@@ -62,30 +63,50 @@ export class EmitEscanUnpacker {
    * @param {Uint8Array} uint8Array The data to add.
    */
   addBinaryData(uint8Array: Uint8Array) {
-    for (const byte of uint8Array) {
-      if (byte === USB_START_READ_BYTE) {
-        this.readPosition = 0;
+    let position = 0;
+    while (position < uint8Array.length) {
+      if (!this.readingFrame) {
+        const start = uint8Array.indexOf(USB_START_READ_BYTE, position);
+        if (start === -1) return;
         this.writePosition = 0;
         this.readingFrame = true;
-      } else if (byte === USB_STOP_READ_BYTE) {
-        if (this.readingFrame) {
+        position = start + 1;
+      }
+
+      const nextStart = uint8Array.indexOf(USB_START_READ_BYTE, position);
+      const nextStop = uint8Array.indexOf(USB_STOP_READ_BYTE, position);
+      const end = Math.min(
+        nextStart === -1 ? uint8Array.length : nextStart,
+        nextStop === -1 ? uint8Array.length : nextStop,
+      );
+      const length = end - position;
+      const requiredLength = this.writePosition + length;
+      if (requiredLength > this.data.length) {
+        const expanded = new Uint8Array(
+          Math.max(this.data.length * 2, requiredLength),
+        );
+        expanded.set(this.data.subarray(0, this.writePosition));
+        this.data = expanded;
+      }
+      this.data.set(uint8Array.subarray(position, end), this.writePosition);
+      this.writePosition = requiredLength;
+      position = end;
+
+      if (position < uint8Array.length) {
+        if (uint8Array[position] === USB_START_READ_BYTE) {
+          this.writePosition = 0;
+        } else {
           this.readingFrame = false;
           this.checkForChunks(this.writePosition);
         }
-      } else if (this.readingFrame) {
-        if (this.writePosition === this.data.length) {
-          const expanded = new Uint8Array(this.data.length * 2);
-          expanded.set(this.data);
-          this.data = expanded;
-        }
-        this.data[this.writePosition++] = byte;
+        position++;
       }
     }
   }
 
   parseFrame(frameData: Uint8Array): UsbFrame {
     const decoder = new TextDecoder("ascii");
-    const frameText = decoder.decode(frameData.buffer);
+    const frameText = decoder.decode(frameData);
 
     const iMatch =
       /I(?<productName>\w+?)-HW(?<hwVersion>.+?)-SW(?<swVersion>.+?)-V(?<version>.+?)\s/gm.exec(
@@ -145,36 +166,27 @@ export class EmitEscanUnpacker {
    * Checks whether new chunks can be found within the binary data.
    */
   checkForChunks(completeReadingPosition: number) {
-    const frameSize = ringBufferReadLength(
-      this.data.byteLength,
-      this.readPosition,
-      completeReadingPosition,
-    );
-
-    const range = getRangeFromRingBuffer(
-      this.data,
-      this.readPosition,
-      frameSize,
-    );
+    const range = this.data.subarray(0, completeReadingPosition);
 
     let frame = {};
     const nByte = 0x4e; // letter N
     const iByte = 0x49; // letter I
-    if (this.data[this.readPosition] === nByte) {
+    if (range[0] === nByte) {
       frame = this.parseDumpTag(range);
-    } else if (this.data[this.readPosition] === iByte) {
+    } else if (range[0] === iByte) {
       frame = this.parseFrame(range);
     } else if (isDev) {
-      console.error("Unknown starting byte", this.data[this.readPosition]);
+      console.error("Unknown starting byte", range[0]);
     }
     if (isDev) {
       console.log(
-        `Frame: ${frameSize}, datalength: ${this.data.byteLength}, readPos: ${this.readPosition}, finPos: ${completeReadingPosition}`,
+        `Frame: ${range.length}, datalength: ${this.data.byteLength}, readPos: ${this.readPosition}, finPos: ${completeReadingPosition}`,
         frame,
-        new TextDecoder("utf-8").decode(
-          getRangeFromRingBuffer(this.data, this.readPosition, frameSize),
-        ),
+        new TextDecoder("utf-8").decode(range),
       );
+    }
+    if (this.data.length > maxRetainedFrameBufferSize) {
+      this.data = new Uint8Array(initialFrameBufferSize);
     }
     this.onChunk && this.onChunk(frame);
   }
