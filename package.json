@@ -29,7 +29,7 @@
   ],
   "prettier": {
     "trailingComma": "all",
-    "proseWrap": "always"
+    "proseWrap": "preserve"
   },
   "author": "mikaello",
   "license": "GPL-3.0",
