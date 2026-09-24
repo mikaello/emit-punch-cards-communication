@@ -20,6 +20,7 @@ Combine changes in one pull request only when they directly serve the same outco
 ## Releases
 
 Write GitHub release notes for changes to the published npm package, grouped into Features and Fixes, and omit internal-only changes.
+Include the relevant pull request links in parentheses at the end of each release-note item.
 Create the GitHub release first; the maintainer publishes the matching npm package manually afterward.
 
 ## Documentation
