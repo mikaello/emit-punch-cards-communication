@@ -55,55 +55,6 @@ export const getControlCodeInformation = (view: DataView) => {
   return codes;
 };
 
-/**
- * Returns null if it does not exist `preambleLength` number of consecutive `0xFF`.
- * Else return start position of consecutive `0xFF`. If more than `preambleLength`
- * number of `0xFF`, ignore the first occurrences.
- *
- * @return `null` if no preamble is found, else return position of start of preamble
- */
-export const checkForNewReadPosition = (
-  preambleLength: number,
-  view: DataView,
-  writePositionNewBytes: number,
-  numberOfNewBytes: number,
-): null | number => {
-  // Need to check if previous reading contained part of preamble
-  const preamblePrevReading = preambleLength - 1;
-  const possibleStart = writePositionNewBytes - preamblePrevReading;
-  const startCheckPosition =
-    possibleStart < 0 ? view.byteLength + possibleStart : possibleStart;
-
-  let i = startCheckPosition,
-    preambleCount = 0,
-    preambleStart = null;
-  for (
-    let counter = 0;
-    counter < numberOfNewBytes + preamblePrevReading;
-    counter++
-  ) {
-    if (view.getUint8(i) === 0xff) {
-      if (preambleCount === 0) {
-        preambleStart = i;
-      } else if (preambleCount >= preambleLength && preambleStart) {
-        /*
-         * preambleCount can be more than 4 if previous reading contained 1 or more
-         * 0xFF and current reading contains 4. Accept therefore only the last 4 0xFF
-         */
-        preambleStart = (preambleStart + 1) % view.byteLength;
-      }
-      preambleCount++;
-    } else if (preambleCount < preambleLength) {
-      preambleCount = 0;
-      preambleStart = null;
-    }
-
-    i = (i + 1) % view.byteLength;
-  }
-
-  return preambleCount < preambleLength ? null : preambleStart;
-};
-
 /** Start of reading, RTX byte */
 export const USB_START_READ_BYTE = 0x02;
 
@@ -132,33 +83,6 @@ export const getByteIndexInNewRingbufferData = (
   }
 
   return (writePositionNewBytes + maybeNewBytePos + 1) % ringBufferSize;
-};
-
-/**
- * Adds data to an existing ring buffer (changes the provided ring buffer,
- * side effect!). Returns the new offset.
- *
- * @param ringBuffer buffer that will have new data added, buffer will be changed
- * @param newData data to be added
- * @param offset where in buffer to start adding data
- * @return the new offset ((old + length of new data) % buffer size)
- */
-export const addToRingBuffer = (
-  ringBuffer: Uint8Array,
-  newData: Uint8Array,
-  offset: number,
-) => {
-  const newOffset = (offset + newData.byteLength) % ringBuffer.byteLength;
-
-  if (offset + newData.byteLength <= ringBuffer.byteLength) {
-    ringBuffer.set(newData, offset);
-  } else {
-    const splitPosition = newData.length - newOffset;
-    ringBuffer.set(newData.slice(0, splitPosition), offset);
-    ringBuffer.set(newData.slice(splitPosition), 0);
-  }
-
-  return newOffset;
 };
 
 /**
