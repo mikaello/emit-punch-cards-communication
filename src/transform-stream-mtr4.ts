@@ -5,9 +5,7 @@ import {
 } from "./byteHandlingUtils.js";
 import {
   getControlCodeInformation,
-  checkForNewReadPosition,
   ringBufferReadLength,
-  addToRingBuffer,
   getRangeFromRingBuffer,
   getMessageType,
   PackageType,
@@ -114,6 +112,8 @@ class Mtr4Unpacker {
   readPosition: number;
   /** New data will be written to this position */
   writePosition: number;
+  private preambleCount = 0;
+  private readingFrame = false;
   onChunk: null | ((chunk: MtrStatusMessage | EcardMtr) => void);
 
   consoleData: Uint8Array;
@@ -340,27 +340,20 @@ class Mtr4Unpacker {
   }
 
   addBinaryData(uint8Array: Uint8Array) {
-    //this.printDataToConsole(uint8Array);
-
-    const newWritePosition = addToRingBuffer(
-      this.data,
-      uint8Array,
-      this.writePosition,
-    );
-
-    const newReadPosition = checkForNewReadPosition(
-      OFF_MTR_PREAMBLE_LENGTH,
-      new DataView(this.data.buffer),
-      this.writePosition,
-      uint8Array.byteLength,
-    );
-    if (newReadPosition != null) {
-      this.readPosition = newReadPosition;
+    // Transport reads can split or combine frames, and exceed the ring size.
+    // Consume each byte before writing the next so no complete frame is lost.
+    for (const byte of uint8Array) {
+      this.data[this.writePosition] = byte;
+      this.writePosition = (this.writePosition + 1) % this.data.length;
+      this.preambleCount = byte === 0xff ? this.preambleCount + 1 : 0;
+      if (this.preambleCount >= OFF_MTR_PREAMBLE_LENGTH) {
+        this.readPosition =
+          (this.writePosition - OFF_MTR_PREAMBLE_LENGTH + this.data.length) %
+          this.data.length;
+        this.readingFrame = true;
+      }
+      if (this.readingFrame) this.checkForChunks();
     }
-
-    this.writePosition = newWritePosition;
-
-    this.checkForChunks();
   }
 
   checkForChunks() {
@@ -382,6 +375,7 @@ class Mtr4Unpacker {
         getRangeFromRingBuffer(this.data, this.readPosition, statusMessageSize),
       );
 
+      this.readingFrame = false;
       this.onChunk && this.onChunk(statusMessage);
     } else if (
       currentReadLength === ecardSize &&
@@ -390,6 +384,7 @@ class Mtr4Unpacker {
       const ecard = this.parseEcard(
         getRangeFromRingBuffer(this.data, this.readPosition, ecardSize),
       );
+      this.readingFrame = false;
       this.onChunk && this.onChunk(ecard);
     }
   }

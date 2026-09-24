@@ -1,8 +1,6 @@
 import { bytesToInt, checkControlCode } from "./byteHandlingUtils.js";
 import {
   getControlCodeInformation,
-  addToRingBuffer,
-  checkForNewReadPosition,
   ringBufferReadLength,
   getRangeFromRingBuffer,
 } from "./transform-stream-utils.js";
@@ -60,6 +58,8 @@ class EmitEKT250Unpacker {
   readPosition: number;
   /** New data will be written to this position */
   writePosition: number;
+  private preambleCount = 0;
+  private readingFrame = false;
 
   /** Option to send metadata as soon as it is read */
   sendMetadataWhenRead: boolean;
@@ -85,25 +85,21 @@ class EmitEKT250Unpacker {
    * @param {Uint8Array} uint8Array The data to add.
    */
   addBinaryData(uint8Array: Uint8Array) {
-    const newWritePosition = addToRingBuffer(
-      this.data,
-      uint8Array,
-      this.writePosition,
-    );
-
-    const newReadPosition = checkForNewReadPosition(
-      LEN_250_PREAMBLE,
-      new DataView(this.data.buffer),
-      this.writePosition,
-      uint8Array.byteLength,
-    );
-    if (newReadPosition != null) {
-      this.readPosition = newReadPosition;
+    // Transport reads can split or combine frames, and exceed the ring size.
+    // Consume each byte before writing the next so no complete frame is lost.
+    for (const byte of uint8Array) {
+      this.data[this.writePosition] = byte;
+      this.writePosition = (this.writePosition + 1) % this.data.length;
+      this.preambleCount = byte === 0xff ? this.preambleCount + 1 : 0;
+      if (this.preambleCount >= LEN_250_PREAMBLE) {
+        this.readPosition =
+          (this.writePosition - LEN_250_PREAMBLE + this.data.length) %
+          this.data.length;
+        this.readingFrame = true;
+        this.parsedEcardMetadata = false;
+      }
+      if (this.readingFrame) this.checkForChunks();
     }
-
-    this.writePosition = newWritePosition;
-
-    this.checkForChunks();
   }
 
   parseEcard(ecardData: Uint8Array): Ecard250 {
@@ -204,6 +200,7 @@ class EmitEKT250Unpacker {
         getRangeFromRingBuffer(this.data, this.readPosition, ecardLength),
       );
       this.parsedEcardMetadata = false;
+      this.readingFrame = false;
       this.onChunk && this.onChunk(ecard);
     } else if (
       this.sendMetadataWhenRead &&
