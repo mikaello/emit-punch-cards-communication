@@ -68,7 +68,7 @@ export const getSetClockCommand = (date: Date | number) => {
 
   let sc = new Uint8Array([47, 83, 67]); // /SC
   let clock = new Uint8Array([
-    Number((date.getFullYear() + "").substring(2)), // only two last digits
+    date.getFullYear() % 100, // only two last digits
     date.getMonth() + 1, // 1 indexed in command
     date.getDate(),
     date.getHours(),
