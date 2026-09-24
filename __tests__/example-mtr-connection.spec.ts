@@ -6,16 +6,8 @@ vi.mock(
 );
 
 test("the MTR example releases the command writer before disconnecting", async () => {
-  const buttons = new Map<
-    string,
-    { disabled: boolean; onclick?: () => unknown }
-  >();
   vi.stubGlobal("document", {
-    querySelector: (selector: string) => {
-      if (selector === "#output") return { textContent: "" };
-      if (!buttons.has(selector)) buttons.set(selector, { disabled: false });
-      return buttons.get(selector);
-    },
+    querySelector: () => ({ disabled: false, addEventListener: () => {} }),
   });
   const writes: Uint8Array[] = [];
   let commandSent!: () => void;
@@ -39,12 +31,12 @@ test("the MTR example releases the command writer before disconnecting", async (
   };
   vi.stubGlobal("navigator", { serial: { requestPort: async () => port } });
   try {
-    await import("../example/main.js");
-    const connecting = buttons.get("#connect-mtr4")!.onclick!();
+    const { connectMtr4, disconnectMtr4 } = await import("../example/helper");
+    const connecting = connectMtr4();
     await sent;
     // Let the write promise settle before requesting disconnect.
     await Promise.resolve();
-    await buttons.get("#disconnect-mtr4")!.onclick!();
+    await disconnectMtr4();
     await connecting;
     expect(writes.map((bytes) => Array.from(bytes))).toEqual([[47, 83, 84]]);
     expect(writable.locked).toBe(false);

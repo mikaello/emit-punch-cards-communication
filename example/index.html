@@ -7,14 +7,31 @@
   </head>
   <body>
     <h1>EMIT device example</h1>
-    <p>Connect a device and read its messages below.</p>
+    <p>Connect a device to inspect its card readings and status messages.</p>
     <button id="connect-250">Connect 250</button>
     <button id="disconnect-250" disabled>Disconnect 250</button>
     <button id="connect-mtr4">Connect MTR4</button>
     <button id="disconnect-mtr4" disabled>Disconnect MTR4</button>
     <button id="connect-escan">Connect eScan</button>
     <button id="disconnect-escan" disabled>Disconnect eScan</button>
-    <pre id="output" aria-live="polite"></pre>
-    <script type="module" src="/main.js"></script>
+    <p id="connection-status" role="status"></p>
+    <h2>Card readings</h2>
+    <p id="last-read-device"></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Card number</th>
+          <th>Production year</th>
+          <th>Production week</th>
+          <th>Control codes</th>
+        </tr>
+      </thead>
+      <tbody id="emit-card-list-body"></tbody>
+    </table>
+    <h2>Last MTR4 status</h2>
+    <dl id="last-mtr4-status"></dl>
+    <h2>Last eScan status</h2>
+    <dl id="last-escan-status"></dl>
+    <script type="module" src="/helper.ts"></script>
   </body>
 </html>

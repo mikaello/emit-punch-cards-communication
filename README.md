@@ -24,7 +24,7 @@ npm install @mikaello/emit-punch-cards-communication
 
 ## Usage
 
-See the [device example](./example) to try the local package with a browser and a connected device.
+See the [device example](./example), especially [helper.ts](./example/helper.ts), to try the local package with a browser and a connected device.
 
 ## Status
 

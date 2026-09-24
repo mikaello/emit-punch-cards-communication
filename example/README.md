@@ -2,6 +2,7 @@
 
 This browser example uses the local package through `file:..`.
 Build the library before starting the example so it loads the current `dist` output.
+See [helper.ts](./helper.ts) for the 250, MTR4, and eScan connection and parsing code.
 
 From the repository root:
 
@@ -13,7 +14,7 @@ npm --prefix example start
 ```
 
 Open the localhost address printed by Vite in a browser with Web Serial and WebUSB support.
-Use the 250, MTR4, or eScan buttons to connect a device and inspect its messages.
+Use the 250, MTR4, or eScan buttons to connect a device and inspect card readings and status messages.
 After changing the library source, run `npm run build` again and reload the page.
 For continuous builds, run `npm run build -- --watch` in another terminal.
 

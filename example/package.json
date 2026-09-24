@@ -4,11 +4,13 @@
   "description": "Local browser example for EMIT devices",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
     "start": "vite"
   },
   "license": "GPL-3.0",
   "devDependencies": {
+    "@types/w3c-web-usb": "1.0.14",
+    "typescript": "7.0.2",
     "vite": "8.3.0"
   },
   "dependencies": {
