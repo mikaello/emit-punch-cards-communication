@@ -1,8 +1,6 @@
 import {
-  addToRingBuffer,
   ringBufferReadLength,
   getRangeFromRingBuffer,
-  getByteIndexInNewRingbufferData,
   USB_START_READ_BYTE,
   USB_STOP_READ_BYTE,
 } from "./transform-stream-utils";
@@ -40,12 +38,13 @@ export type DumpTagFrame = {};
  * Credits: https://github.com/mdn/dom-examples/blob/master/streams/png-transform-stream/png-transform-stream.js
  */
 export class EmitEscanUnpacker {
-  /** Ringbuffer */
+  /** Buffer for the current frame; grows for large tag dumps. */
   data: Uint8Array;
   /** Current reading position */
   readPosition: number;
   /** New data will be written to this position */
   writePosition: number;
+  private readingFrame = false;
 
   /** Every time a new frame is compiled, this function will get it */
   onChunk: null | ((chunk: UsbFrame | DumpTagFrame) => void);
@@ -63,35 +62,25 @@ export class EmitEscanUnpacker {
    * @param {Uint8Array} uint8Array The data to add.
    */
   addBinaryData(uint8Array: Uint8Array) {
-    const newWritePosition = addToRingBuffer(
-      this.data,
-      uint8Array,
-      this.writePosition,
-    );
-
-    const newReadPosition = getByteIndexInNewRingbufferData(
-      this.data.byteLength,
-      this.writePosition,
-      uint8Array,
-      USB_START_READ_BYTE,
-    );
-
-    if (newReadPosition != null) {
-      this.readPosition = newReadPosition;
+    for (const byte of uint8Array) {
+      if (byte === USB_START_READ_BYTE) {
+        this.readPosition = 0;
+        this.writePosition = 0;
+        this.readingFrame = true;
+      } else if (byte === USB_STOP_READ_BYTE) {
+        if (this.readingFrame) {
+          this.readingFrame = false;
+          this.checkForChunks(this.writePosition);
+        }
+      } else if (this.readingFrame) {
+        if (this.writePosition === this.data.length) {
+          const expanded = new Uint8Array(this.data.length * 2);
+          expanded.set(this.data);
+          this.data = expanded;
+        }
+        this.data[this.writePosition++] = byte;
+      }
     }
-
-    if (this.readPosition) {
-      const completeReadingPosition = getByteIndexInNewRingbufferData(
-        this.data.byteLength,
-        this.writePosition,
-        uint8Array,
-        USB_STOP_READ_BYTE,
-      );
-
-      completeReadingPosition && this.checkForChunks(completeReadingPosition);
-    }
-
-    this.writePosition = newWritePosition;
   }
 
   parseFrame(frameData: Uint8Array): UsbFrame {
@@ -185,9 +174,9 @@ export class EmitEscanUnpacker {
 /**
  * This transform stream unpacks objects of frames from an eScan device.
  *
- * Unfortunately this does not work at the moment, it seems that the streaming takes
- * too much time, and as a result we got package loss. Use the `EmitEscanUnpacker`
- * directly instead.
+ * Reassembles frames independently of transport chunk boundaries.
+ * Tag dump decoding is still unimplemented; only status fields are parsed.
+ * Sustained throughput with physical hardware has not been verified.
  *
  * It can be consumed by a ReadableStream's pipeThrough method.
  */
