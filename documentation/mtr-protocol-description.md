@@ -71,7 +71,7 @@ format:
 | 21-23   | e-card no.      | Binary, Least significant byte first                                                                                                     |       | 3               |
 | 24      | Production week | `0-53` (`0` when package is retrieved from "history", e.g. when spooling)                                                                |       | 1               |
 | 25      | Production year | `94-99`,`0-..X` (`0` when package is retrieved from "history", e.g. when spooling)                                                       |       | 1               |
-| 26      | e-card head sum | head check sum <TODO: how to calculate?> (value `0` when package is retrieved from "history", e.g. when spooling)                        |       | 1               |
+| 26      | e-card head sum | For MTR4 card messages, the sum of bytes 21-26 modulo 256 equals 0.                                                                      |       | 1               |
 | 27-176  | control-codes   | Control codes and times. 50 x (1 byte binary control code 0-250 and 2 bytes binary time 0-65534 sec). Unused controls and times are `0`. |       | 150             |
 | 177-232 | ASCII-string    | Various info depending on e-card-type. 20h when retrieved from "history" (see [ASCII-string](#ascii-string-in-mtr-message))              |       | 56              |
 | 233     | Checksum        | Binary SUM (MOD 256) of all bytes before this byte (including `preamble`) should equal this byte (NB. different than 250-device)         |       | 1               |
@@ -79,7 +79,7 @@ format:
 |         |                 |                                                                                                                                          |       |                 |
 |         |                 | **SUM**                                                                                                                                  |       | **234**         |
 
-All bytes must be XOR-ed with OD (255 - 32).
+Unlike MTR4 message bytes, 250 reader messages are XOR-encoded with `0xDF`.
 
 ## Status message
 

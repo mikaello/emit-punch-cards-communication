@@ -80,9 +80,8 @@ const OFF_MTR_ECARD_NUMBER = 20; // bytes 21-23: ecard number (3 bytes)
 const LEN_MTR_ECARD_NUMBER = 3;
 const OFF_MTR_ECARD_PRODUCTION_WEEK = 23; // byte 24
 const OFF_MTR_ECARD_PRODUCTION_YEAR = 24; // byte 25
-const OFF_MTR_ECARD_HEAD_CHECK_START = 4; // bytes 5-25: ecard head checksum region
-const LEN_MTR_ECARD_HEAD_CHECK = 21;
-const OFF_MTR_ECARD_HEAD_CHECK_BYTE = 25; // byte 26: expected head checksum
+const OFF_MTR_ECARD_HEAD_CHECK_START = 20; // bytes 21-26: card identity and checksum
+const LEN_MTR_ECARD_HEAD_CHECK = 6;
 const OFF_MTR_ECARD_CONTROL_CODES = 26; // bytes 27-176: 50 × (code + 2-byte time)
 const LEN_MTR_ECARD_CONTROL_CODES = 150;
 const OFF_MTR_ECARD_ASCII_STRING = 176; // bytes 177-232: ASCII string
@@ -207,7 +206,7 @@ class Mtr4Unpacker {
           OFF_MTR_ECARD_HEAD_CHECK_START,
           LEN_MTR_ECARD_HEAD_CHECK,
         ),
-        ecardData[OFF_MTR_ECARD_HEAD_CHECK_BYTE],
+        0,
       ),
       controlCodes: getControlCodeInformation(
         new DataView(
