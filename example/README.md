@@ -1,25 +1,24 @@
-# Demo - communication with 250 and MTR4 device
+# Device example
 
-Transpile code and start server:
+This browser example uses the local package through `file:..`.
+Build the library before starting the example so it loads the current `dist` output.
 
-```shell
-npm install
-npm start
+From the repository root:
+
+```sh
+npm ci
+npm run build
+npm --prefix example ci
+npm --prefix example start
 ```
 
-You can now open [http://localhost:8080](http://localhost:8080) and start
-testing your local 250 or MTR4 device (if using cURL, you will need to add the
-`--compressed` arg, because [servor](https://github.com/lukejacksonn/servor)
-serves gzipped since v3.3.1).
+Open the localhost address printed by Vite in a browser with Web Serial and WebUSB support.
+Use the 250, MTR4, or eScan buttons to connect a device and inspect its messages.
+After changing the library source, run `npm run build` again and reload the page.
+For continuous builds, run `npm run build -- --watch` in another terminal.
 
-To continuously watch files for changes, you need to start Gulp (in another
-tab):
+The example build can verify that the browser can bundle the package without a device:
 
-```shell
-npm run dev
+```sh
+npm --prefix example run build
 ```
-
-When `npm run dev` is ran, Gulp will start and you can change code in both this
-folder (_example_) and in the library (one up (`../src/*.ts`)). Gulp is watching
-changes for all TS-files, and will start the correct task according to which
-file is changed. The server will automatically reload when files are changed.
