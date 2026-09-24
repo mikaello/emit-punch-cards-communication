@@ -11,6 +11,11 @@ Fix test and lint failures before proceeding.
 Prefer brevity in code and documentation.
 Keep implementation scope tight, and ask before expanding it materially.
 
+## Pull requests
+
+Open a separate pull request for each unrelated feature or fix.
+Combine changes in one pull request only when they directly serve the same outcome.
+
 ## Documentation
 
 Keep documentation concise.
