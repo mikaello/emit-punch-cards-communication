@@ -17,6 +17,18 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm run test
+
+  build-example:
+    runs-on: ubuntu-latest
+    name: build-lint-test example
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm run build
       - run: npm ci
         working-directory: example
       - run: npm run build
