@@ -2,6 +2,7 @@ import {
   USB_START_READ_BYTE,
   USB_STOP_READ_BYTE,
 } from "./transform-stream-utils.js";
+import { parseEscan2Frame, type Escan2Frame } from "./escan2.js";
 
 // Only log in development (NODE_ENV=development in Node.js; bundlers substitute this in browser)
 const isDev =
@@ -48,9 +49,9 @@ export class EmitEscanUnpacker {
   private readingFrame = false;
 
   /** Every time a new frame is compiled, this function will get it */
-  onChunk: null | ((chunk: UsbFrame | DumpTagFrame) => void);
+  onChunk: null | ((chunk: UsbFrame | DumpTagFrame | Escan2Frame) => void);
 
-  constructor() {
+  constructor(private readonly device: "escan" | "escan2" = "escan") {
     this.data = new Uint8Array(initialFrameBufferSize);
     this.readPosition = 0;
     this.writePosition = 0;
@@ -168,6 +169,15 @@ export class EmitEscanUnpacker {
   checkForChunks(completeReadingPosition: number) {
     const range = this.data.subarray(0, completeReadingPosition);
 
+    if (this.device === "escan2") {
+      const frame = parseEscan2Frame(range);
+      if (this.data.length > maxRetainedFrameBufferSize) {
+        this.data = new Uint8Array(initialFrameBufferSize);
+      }
+      if (frame) this.onChunk?.(frame);
+      return;
+    }
+
     let frame = {};
     const nByte = 0x4e; // letter N
     const iByte = 0x49; // letter I
@@ -189,6 +199,24 @@ export class EmitEscanUnpacker {
       this.data = new Uint8Array(initialFrameBufferSize);
     }
     this.onChunk && this.onChunk(frame);
+  }
+}
+
+/** Reassembles eScan2 serial bytes into status, tag dump, and passing frames. */
+export class EmitEscan2TransformStream extends TransformStream<
+  Uint8Array,
+  Escan2Frame
+> {
+  constructor() {
+    const unpacker = new EmitEscanUnpacker("escan2");
+    super({
+      start(controller) {
+        unpacker.onChunk = (frame) => controller.enqueue(frame as Escan2Frame);
+      },
+      transform(bytes) {
+        unpacker.addBinaryData(bytes);
+      },
+    });
   }
 }
 
