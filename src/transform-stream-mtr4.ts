@@ -1,4 +1,8 @@
-import { bytesToInt, checkControlCode, bytesToDate } from "./byteHandlingUtils";
+import {
+  bytesToInt,
+  checkControlCode,
+  bytesToDate,
+} from "./byteHandlingUtils.js";
 import {
   getControlCodeInformation,
   checkForNewReadPosition,
@@ -8,7 +12,7 @@ import {
   getMessageType,
   PackageType,
   BatteryStatus,
-} from "./transform-stream-utils";
+} from "./transform-stream-utils.js";
 
 export const serialOptionsMtr4 = {
   baudRate: 9600,

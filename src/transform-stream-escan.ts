@@ -3,7 +3,7 @@ import {
   getRangeFromRingBuffer,
   USB_START_READ_BYTE,
   USB_STOP_READ_BYTE,
-} from "./transform-stream-utils";
+} from "./transform-stream-utils.js";
 
 // Only log in development (NODE_ENV=development in Node.js; bundlers substitute this in browser)
 const isDev =
