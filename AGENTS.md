@@ -17,6 +17,11 @@ For MTR4 raw-byte debugging, use `new Mtr4TransformStream({ logRawDataAfterIdle:
 Open a separate pull request for each unrelated feature or fix.
 Combine changes in one pull request only when they directly serve the same outcome.
 
+## Releases
+
+Write GitHub release notes for changes to the published npm package, grouped into Features and Fixes, and omit internal-only changes.
+Create the GitHub release first; the maintainer publishes the matching npm package manually afterward.
+
 ## Documentation
 
 Keep documentation concise.
