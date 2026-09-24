@@ -3,6 +3,7 @@
 This browser example uses the local package through `file:..`.
 Build the library before starting the example so it loads the current `dist` output.
 See [helper.ts](./helper.ts) for the 250, MTR4, and eScan connection and parsing code.
+The [Web Serial types](./serial-types.ts) link to the relevant parts of the specification.
 
 From the repository root:
 

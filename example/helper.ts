@@ -11,7 +11,7 @@ import {
   type EcardMtr,
   type MtrStatusMessage,
 } from "@mikaello/emit-punch-cards-communication";
-import type { SerialPort } from "./serial-types";
+import type { SerialOptions, SerialPort } from "./serial-types";
 
 let port250: SerialPort | undefined;
 let reader250: ReadableStreamDefaultReader<Ecard250> | undefined;
@@ -66,7 +66,7 @@ export async function connect250() {
   if (!navigator.serial) return showError("Web Serial is unavailable");
   try {
     const port = await navigator.serial.requestPort();
-    await port.open(serialOptions250);
+    await port.open(serialOptions250 as SerialOptions);
     port250 = port;
     setConnected("250", true);
 
@@ -103,7 +103,7 @@ export async function connectMtr4() {
   if (!navigator.serial) return showError("Web Serial is unavailable");
   try {
     const port = await navigator.serial.requestPort();
-    await port.open(serialOptionsMtr4);
+    await port.open(serialOptionsMtr4 as SerialOptions);
     portMtr4 = port;
     setConnected("mtr4", true);
 
