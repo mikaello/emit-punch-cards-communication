@@ -1,40 +1,19 @@
 {
-  "name": "webbotime",
-  "version": "1.0.0",
-  "description": "Online orienteering centre with EMIT EKT integration",
-  "main": "helper.ts",
+  "name": "emit-device-example",
+  "private": true,
+  "description": "Local browser example for EMIT devices",
   "type": "module",
   "scripts": {
-    "clean": "rm -rf dist/",
-    "build": "vite build",
-    "start": "vite preview --host",
-    "dev": "vite --host",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc --noEmit && vite build",
+    "start": "vite"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mikaello/emit-punch-cards-communication.git"
-  },
-  "browserslist": [
-    "last 1 Chrome versions"
-  ],
-  "prettier": {
-    "trailingComma": "all",
-    "proseWrap": "always"
-  },
-  "author": "mikaello",
   "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/mikaello/emit-punch-cards-communication/issues"
-  },
-  "homepage": "https://github.com/mikaello/emit-punch-cards-communication#readme",
   "devDependencies": {
-    "@types/node": "24.13.6",
     "@types/w3c-web-usb": "1.0.14",
     "typescript": "7.0.2",
     "vite": "8.3.1"
   },
   "dependencies": {
-    "@mikaello/emit-punch-cards-communication": "file:./../"
+    "@mikaello/emit-punch-cards-communication": "file:.."
   }
 }

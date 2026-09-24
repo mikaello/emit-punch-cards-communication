@@ -1,16 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "strict": false,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "@mikaello/emit-punch-cards-communication": ["../src/index.ts"]
-    }
-  }
+    "strict": true,
+    "noEmit": true,
+    "types": ["w3c-web-usb"]
+  },
+  "include": ["helper.ts", "serial-types.ts"]
 }

@@ -6,11 +6,9 @@ vi.mock(
 );
 
 test("the MTR example releases the command writer before disconnecting", async () => {
-  vi.stubGlobal("window", {});
   vi.stubGlobal("document", {
-    getElementById: () => ({ style: { display: "none" } }),
+    querySelector: () => ({ disabled: false, addEventListener: () => {} }),
   });
-  const log = vi.spyOn(console, "log").mockImplementation(() => {});
   const writes: Uint8Array[] = [];
   let commandSent!: () => void;
   const sent = new Promise<void>((resolve) => {
@@ -44,7 +42,6 @@ test("the MTR example releases the command writer before disconnecting", async (
     expect(writable.locked).toBe(false);
     expect(port.close).toHaveBeenCalledOnce();
   } finally {
-    log.mockRestore();
     vi.unstubAllGlobals();
   }
 });

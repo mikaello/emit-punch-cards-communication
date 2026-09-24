@@ -24,8 +24,7 @@ npm install @mikaello/emit-punch-cards-communication
 
 ## Usage
 
-See [example](./example) project to see how this library could be used,
-especially [helper.ts](./example/helper.ts).
+See the [device example](./example), especially [helper.ts](./example/helper.ts), to try the local package with a browser and a connected device.
 
 ## Status
 

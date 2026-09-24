@@ -27,9 +27,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-      - uses: bahmutov/npm-install@v1 # For improved caching of NPM/
-        with:
-          working-directory: example
+      - run: npm ci
+      - run: npm run build
       - run: npm ci
         working-directory: example
       - run: npm run build
