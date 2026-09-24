@@ -8,6 +8,9 @@ const isDev =
   (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env
     ?.NODE_ENV === "development";
 
+const initialFrameBufferSize = 4000;
+const maxRetainedFrameBufferSize = 1024 * 1024;
+
 export type UsbFrame = {
   productName: "eScan" | "ECU";
   hardwareVersion: string;
@@ -48,7 +51,7 @@ export class EmitEscanUnpacker {
   onChunk: null | ((chunk: UsbFrame | DumpTagFrame) => void);
 
   constructor() {
-    this.data = new Uint8Array(4000);
+    this.data = new Uint8Array(initialFrameBufferSize);
     this.readPosition = 0;
     this.writePosition = 0;
     this.onChunk = null;
@@ -181,6 +184,9 @@ export class EmitEscanUnpacker {
         frame,
         new TextDecoder("utf-8").decode(range),
       );
+    }
+    if (this.data.length > maxRetainedFrameBufferSize) {
+      this.data = new Uint8Array(initialFrameBufferSize);
     }
     this.onChunk && this.onChunk(frame);
   }

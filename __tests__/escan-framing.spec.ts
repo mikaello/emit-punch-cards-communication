@@ -95,6 +95,7 @@ test("preserves a multi-megabyte tag frame across large USB reads", () => {
   unpacker.addBinaryData(bytes.subarray(0, 700_000));
   unpacker.addBinaryData(bytes.subarray(700_000, 2_000_000));
   unpacker.addBinaryData(bytes.subarray(2_000_000));
+  expect(unpacker.data.byteLength).toBe(4000);
   unpacker.addBinaryData(encode(status(2)));
 
   expect(parseDumpTag).toHaveBeenCalledOnce();
