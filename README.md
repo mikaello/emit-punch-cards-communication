@@ -10,6 +10,7 @@ communicate with the 250 and MTR4 device, the
 for the eScan device
 [WebUSB API](https://developer.mozilla.org/en-US/docs/Web/API/WebUSB_API) was
 needed.
+eScan2 uses Web Serial at 115200 8N1 through its virtual COM port.
 
 NB: The Serial API currently only works in Chrome and Edge, while WebUSB API
 does also work on Chrome for Android.
@@ -28,7 +29,7 @@ See the [device example](./example), especially [helper.ts](./example/helper.ts)
 
 ## Status
 
-- :x: eScan2 device
+- :warning: eScan2 serial status, tag dumps, passings, and read-only spool commands (hardware verification pending)
 - :white_check_mark: eScan device
 - :x: ECU1
 - :white_check_mark: 250 device

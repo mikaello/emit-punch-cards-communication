@@ -1,15 +1,20 @@
 import {
   EmitEkt250TransformStream,
   EmitEscanUnpacker,
+  EmitEscan2TransformStream,
   Mtr4TransformStream,
   PackageType,
   escanCommands,
+  escan2Commands,
   mtr4Commands,
   serialOptions250,
   serialOptionsMtr4,
+  serialOptionsEscan2,
   type Ecard250,
   type EcardMtr,
   type MtrStatusMessage,
+  type Escan2Frame,
+  type Escan2Dump,
 } from "@mikaello/emit-punch-cards-communication";
 import type { SerialOptions, SerialPort } from "./serial-types";
 
@@ -20,12 +25,21 @@ let readerMtr4:
   ReadableStreamDefaultReader<EcardMtr | MtrStatusMessage> | undefined;
 let escanDevice: USBDevice | undefined;
 let escanDisconnecting = false;
+let portEscan2: SerialPort | undefined;
+let readerEscan2: ReadableStreamDefaultReader<Escan2Frame> | undefined;
+let escan2CommandQueue = Promise.resolve();
 
 function setConnected(device: string, connected: boolean) {
   document.querySelector<HTMLButtonElement>(`#connect-${device}`)!.disabled =
     connected;
   document.querySelector<HTMLButtonElement>(`#disconnect-${device}`)!.disabled =
     !connected;
+  if (device === "escan2") {
+    for (const action of ["today", "all", "stop"]) {
+      document.querySelector<HTMLButtonElement>(`#escan2-${action}`)!.disabled =
+        !connected;
+    }
+  }
 }
 
 function showError(error: unknown) {
@@ -48,6 +62,95 @@ function appendCard(device: string, card: Ecard250 | EcardMtr) {
   document.querySelector("#emit-card-list-body")!.prepend(row);
   document.querySelector("#last-read-device")!.textContent =
     `Last card read from ${device}`;
+}
+
+function appendEscan2Card(card: Escan2Dump) {
+  const production =
+    card.tagType === "eCard" ? /-(\d{2})(\d{2})$/.exec(card.power) : null;
+  const row = document.createElement("tr");
+  for (const value of [
+    card.cardNumber,
+    production?.[2] ?? "",
+    production?.[1] ?? "",
+    card.punches.map(({ code }) => code).join(", "),
+  ]) {
+    const cell = document.createElement("td");
+    cell.textContent = String(value);
+    row.append(cell);
+  }
+  document.querySelector("#emit-card-list-body")!.prepend(row);
+  document.querySelector("#last-read-device")!.textContent =
+    `Last ${card.tagType} read from eScan2 (${card.validChecksum ? "checksum OK" : "checksum mismatch"})`;
+}
+
+function sendEscan2Command(command: Uint8Array) {
+  const port = portEscan2;
+  if (!port?.writable) return Promise.resolve();
+  const pending = escan2CommandQueue.then(async () => {
+    const writer = port.writable!.getWriter();
+    try {
+      await writer.write(command);
+    } finally {
+      writer.releaseLock();
+    }
+  });
+  escan2CommandQueue = pending.catch(() => {});
+  return pending;
+}
+
+export async function connectEscan2() {
+  if (!navigator.serial) return showError("Web Serial is unavailable");
+  try {
+    const port = await navigator.serial.requestPort();
+    await port.open(serialOptionsEscan2 as SerialOptions);
+    portEscan2 = port;
+    setConnected("escan2", true);
+    const transform = new EmitEscan2TransformStream();
+    const inputDone = port.readable!.pipeTo(transform.writable).catch(() => {});
+    const reader = transform.readable.getReader();
+    readerEscan2 = reader;
+    try {
+      await sendEscan2Command(escan2Commands.getStatusCommand());
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        if (value.kind === "status") {
+          showStatus("#last-escan2-status", value);
+        } else if (value.kind === "dump") {
+          appendEscan2Card(value);
+        } else {
+          showStatus("#last-escan2-passing", value);
+        }
+      }
+    } finally {
+      await reader.cancel().catch(() => {});
+      reader.releaseLock();
+      await inputDone;
+    }
+  } catch (error) {
+    showError(error);
+  } finally {
+    readerEscan2 = undefined;
+    setConnected("escan2", false);
+    if (portEscan2) await portEscan2.close().catch(showError);
+    portEscan2 = undefined;
+  }
+}
+
+export async function disconnectEscan2() {
+  await readerEscan2?.cancel();
+}
+
+export async function spoolEscan2Today() {
+  await sendEscan2Command(escan2Commands.getTodayCommand()).catch(showError);
+}
+
+export async function spoolEscan2All() {
+  await sendEscan2Command(escan2Commands.getAllCommand()).catch(showError);
+}
+
+export async function stopEscan2Spool() {
+  await sendEscan2Command(escan2Commands.getStopCommand()).catch(showError);
 }
 
 function showStatus(selector: string, status: object) {
@@ -217,3 +320,18 @@ document
 document
   .querySelector("#disconnect-escan")!
   .addEventListener("click", disconnectEscan);
+document
+  .querySelector("#connect-escan2")!
+  .addEventListener("click", connectEscan2);
+document
+  .querySelector("#disconnect-escan2")!
+  .addEventListener("click", disconnectEscan2);
+document
+  .querySelector("#escan2-today")!
+  .addEventListener("click", spoolEscan2Today);
+document
+  .querySelector("#escan2-all")!
+  .addEventListener("click", spoolEscan2All);
+document
+  .querySelector("#escan2-stop")!
+  .addEventListener("click", stopEscan2Spool);
